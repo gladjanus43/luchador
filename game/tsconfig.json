@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "es5",
+        "removeComments": true,
+        "noUnusedLocals":true,
+        "noUnusedParameters":true,
+        "sourceMap": true,
+        "outFile": "docs/js/main.js",
+        "lib" : ["es2015", "dom"]
+    },
+    "files": [
+        "lib/phaser.d.ts",
+        "lib/pixi.d.ts"
+    ],
+    "include": [
+        "typescript/**/*"
+    ]
+}
