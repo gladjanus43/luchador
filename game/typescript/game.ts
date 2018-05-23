@@ -1,10 +1,11 @@
-let game : Phaser.Game
+var game : Phaser.Game
+
 class Game{
     constructor(){
         game = new Phaser.Game(800, 600, Phaser.AUTO,'content',{
             create  : this.create,
             preload : this.preload,
-            update  : this.update
+            update : this.update
         });
     }
 
@@ -19,6 +20,6 @@ class Game{
     }
 
 }
-window.onload = () => {
+window.onload = function(){
     new Game();
 };
