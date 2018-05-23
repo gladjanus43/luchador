@@ -7,6 +7,12 @@ class Game{
             preload : this.preload,
             update : this.update
         });
+
+        this.loadSayings()
+    }
+
+    loadSayings(){
+        
     }
 
     preload(){
