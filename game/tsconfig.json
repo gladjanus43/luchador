@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "module":"commonjs",
         "strict": true,
         "target": "es5",
         "removeComments": true,
@@ -7,7 +8,8 @@
         "noUnusedParameters":true,
         "sourceMap": true,
         "outFile": "docs/js/main.js",
-        "lib" : ["es2015", "dom"]
+        "lib" : ["es2015", "dom"],
+        "watch": true
     },
     "files": [
         "lib/phaser.d.ts",
