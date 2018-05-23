@@ -6,21 +6,6 @@ class Game{
         game = new Phaser.Game(800, 600, Phaser.AUTO,'content',{
             create  : this.create,
             preload : this.preload,
-<<<<<<< HEAD
-            update  : this.update
-        });
-    }
-
-preload(){
-
-}
-create(){
-
-}
-update(){
-
-}
-=======
             update : this.update
         });
     }
@@ -34,7 +19,6 @@ update(){
     update(){
 
     }
->>>>>>> gijs
 
 }
 window.onload = function(){
