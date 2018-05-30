@@ -1,0 +1,16 @@
+body{
+
+}
+
+#content{
+
+}
+
+bubble{
+    display: block;
+    position: absolute;
+    top: 120px;
+    left: 100px;
+    background-color: beige;
+    z-index: 10;
+}
