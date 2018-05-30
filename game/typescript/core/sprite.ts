@@ -1,4 +1,4 @@
-export default class Sprite extends Phaser.Sprite{
+class Sprite extends Phaser.Sprite{
 
     /**
      * @param {Phaser.Game} game

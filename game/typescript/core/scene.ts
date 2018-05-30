@@ -1,8 +1,14 @@
-export default class Scene extends Phaser.State{
+class Scene extends Phaser.State{
     style!:object;
     startButton!:Phaser.Sprite;
     musicButton!:Phaser.Sprite;
+    // mainGame:MainGame;
 
+    constructor(){
+        super();
+
+        // this.mainGame = game;
+    }
     /**
      * Method to load standard assets for setting buttons
      */
@@ -87,6 +93,11 @@ export default class Scene extends Phaser.State{
         return bitmap;
     }
 
+    protected loadBackgroundMusic()
+    {
+        game.load.audio('background-music', ['./audio/background-music.mp3']);
+    }
+
     /**
      * Method to set font style
      * @param {{}} styling
@@ -102,6 +113,6 @@ export default class Scene extends Phaser.State{
      */
     protected switchScenes(sceneName:string):void
     {
-        this.game.state.start(sceneName);
+        this.game.state.start(sceneName,true,false);
     }
 }

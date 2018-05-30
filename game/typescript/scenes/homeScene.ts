@@ -1,50 +1,54 @@
-import Scene from "../core/scene";
 
-export default class HomeScene extends Scene{
+class HomeScene extends Scene{
 
     text!:Phaser.Text;
 
     preload()
     {
-        this.load.image('start-button',"./img/WrestlerWorld.png");
-        this.style = { font: "Press Start 2P", size: 60, fill: "#00ff44" };
+        this.load.image('start-button',"./img/start-button-lucha.png");
     }
 
     create()
     {
-        this.stage.backgroundColor = '#ffffff';
-        this.game.add.sprite(300,400,'start-button');
-        this.createHomeScreen();
+        game.stage.backgroundColor = '#ffffff';
+        let start = game.add.sprite(game.world.centerX, game.world.centerY,'start-button');
+        start.anchor.setTo(0.5,0.5);
+        start.scale.setTo(0.2,0.2);
+
+        let text = game.add.text(game.world.centerX, game.world.centerY + start.height / 1.5,"Start");
+        text.anchor.setTo(0.5,0.5);
+
+        text.font = "Press Start 2P";
+        text.fontSize = 50;
+        text.fill = '#00ff44';
+
+        text.align = 'center';
+        text.stroke = '#000000';
+        text.strokeThickness = 2;
+        text.setShadow(5,5,'rgba(0,0,0,0.5)', 5);
+        text.inputEnabled = true;
+
+        text.events.onInputUp.add(() => { game.state.start('playScene') });
+        text.events.onInputOver.add((textp = text) => this.hoverOverText(textp));
+        text.events.onInputOut.add((textp = text) => this.hoverOutText(textp));
+
+        // this.createHomeScreen(start);
     }
 
 
-    createHomeScreen()
+    // createHomeScreen(start:Phaser.Sprite)
+    // {
+    //
+    // }
+
+    hoverOverText(text:Phaser.Text)
     {
-        this.text = this.game.add.text(this.game.world.centerX, this.game.world.centerY,"Start");
-        this.text.anchor.setTo(0.5);
-
-        this.text.font = "Press Start 2P";
-        this.text.fontSize = 60;
-        this.text.fill = '#00ff44';
-
-        this.text.align = 'center';
-        this.text.stroke = '#000000';
-        this.text.strokeThickness = 2;
-        this.text.setShadow(5,5,'rgba(0,0,0,0.5)', 5);
-        this.text.inputEnabled = true;
-
-        this.text.events.onInputOver.add(this.hoverOverText);
-        this.text.events.onInputOut.add(this.hoverOutText);
+        text.fill = '#D03958';
     }
 
-    hoverOverText()
+    hoverOutText(text:Phaser.Text)
     {
-        this.text.fill = '#D03958';
-    }
-
-    hoverOutText()
-    {
-        this.text.fill = '#00ff44';
+        text.fill = '#00ff44';
     }
 
 }
