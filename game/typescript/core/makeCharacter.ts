@@ -9,6 +9,8 @@ class MakeCharacter{
     decoration:Phaser.Sprite;
     shoes:Phaser.Sprite;
     emotion:string;
+    mouthCollection:Phaser.Sprite;
+    tears:Phaser.Sprite;
 
     constructor(emotion:string)
     {
@@ -39,10 +41,20 @@ class MakeCharacter{
         this.rightEye.scale.setTo(0.25,0.25);
         this.rightEye.alignIn(this.head,Phaser.CENTER,50,20);
 
-        this.mouth = game.add.sprite(0,0,'mouth-' + this.emotion);
+        this.tears = game.add.sprite(-100,0,'tears');
+        this.tears.anchor.set(0.5);
+
+        this.mouth = game.add.sprite(0,0,'mouth-empty');
         this.mouth.anchor.setTo(0.5,0.5);
         this.mouth.scale.setTo(0.25,0.25);
         this.mouth.alignIn(this.head,Phaser.CENTER,0,76);
+
+        this.mouthCollection = game.add.sprite(0, 0, 'mouths');
+        this.mouthCollection.anchor.set(0.5);
+        this.mouthCollection.scale.set(0.5);
+        this.mouthCollection.alignIn(this.mouth,Phaser.CENTER,0,5);
+        this.mouthCollection.frame = 8;
+
 
         this.pants = game.add.sprite(0,0,'generic-pants');
         this.pants.anchor.setTo(0.5,0.5);
@@ -55,6 +67,58 @@ class MakeCharacter{
         this.shoes.alignTo(this.pants,Phaser.BOTTOM_CENTER,0,-10);
     }
 
+    cry()
+    {
+        this.tears.alignIn(this.head,Phaser.CENTER,0,40);
+        this.tears.animations.add('cry');
+        this.tears.animations.play('cry',4,true);
+
+        this.mouthCollection.animations.add('mouth-cry',[21,22,23,43,29,40]);
+        this.mouthCollection.animations.play('mouth-cry',3,false);
+    }
+
+    setupCharacterColorPicker(callback:any)
+    {
+        this.head.inputEnabled = true;
+        this.head.events.onInputUp.add(() => callback(this.head));
+
+        this.decoration.inputEnabled = true;
+        this.decoration.events.onInputUp.add(() => callback(this.decoration));
+
+        this.pants.inputEnabled = true;
+        this.pants.events.onInputUp.add(() => callback(this.pants));
+
+        this.shoes.inputEnabled = true;
+        this.shoes.events.onInputUp.add(() => callback(this.shoes));
+    }
+
+    static changeColor(item:Sprite|Phaser.Button,color:string)
+    {
+        item.tint = MakeCharacter.getColorCode(color);
+    }
+
+    stopCrying()
+    {
+        this.tears.animations.stop('cry');
+        this.tears.visible = false;
+
+        this.mouthCollection.animations.stop('mouth-cry');
+        this.mouthCollection.frame = 3;
+    }
+
+    talk()
+    {
+        this.mouthCollection.animations.add('mouth-talk',[14,15,16,17]);
+        this.mouthCollection.animations.play('mouth-talk',5,true);
+    }
+
+    stopTalking()
+    {
+        this.mouthCollection.animations.stop('mouth-talk');
+        this.mouthCollection.frame = 8;
+    }
+
+
     getCharacterHead():Phaser.Sprite
     {
         return this.head;
@@ -62,12 +126,27 @@ class MakeCharacter{
 
     changeMaskColor(color:string)
     {
-        this.head.tint = this.getColorCode(color);
+        this.head.tint = MakeCharacter.getColorCode(color);
     }
 
     changePantsColor(color:string)
     {
-        this.pants.tint = this.getColorCode(color);
+        this.pants.tint = MakeCharacter.getColorCode(color);
+    }
+
+    changeMouthEmotion(emotion:string)
+    {
+        this.mouth.loadTexture('mouth-' + emotion);
+    }
+
+    getMouthSprite()
+    {
+        return this.mouth;
+    }
+
+    changeMouth()
+    {
+
     }
 
     setMaskDecoration(imgKey:string,xOffset:number,yOffset:number,color:string = '')
@@ -79,20 +158,20 @@ class MakeCharacter{
 
     changeMaskDecoration(imgKey:string,color:string = '')
     {
-        this.decoration.loadTexture(imgKey);
+        this.decoration.loadTexture("mask-extra-" + imgKey);
         if(color !== ''){
-            this.decoration.tint = this.getColorCode(color);
+            this.decoration.tint = MakeCharacter.getColorCode(color);
         }
     }
 
     changeMaskDecorationColor(color:string)
     {
-        this.decoration.tint = this.getColorCode(color);
+        this.decoration.tint = MakeCharacter.getColorCode(color);
     }
 
     changeShoesColor(color:string)
     {
-        this.shoes.tint = this.getColorCode(color);
+        this.shoes.tint = MakeCharacter.getColorCode(color);
     }
 
     switchEyeColor(color:string)
@@ -109,13 +188,13 @@ class MakeCharacter{
         }
     }
 
-    getColorCode(hexColor:string)
+    static getColorCode(hexColor:string)
     {
         let code = hexColor.split("#");
         return Number("0x" + code[1]);
     }
 
-    static loadCharacterAssets(scene:Phaser.State)
+    static loadCharacterAssets(scene:Scene)
     {
         // Blue Eyes; left and right; devious, sad, happy
         // Devious
@@ -148,6 +227,7 @@ class MakeCharacter{
         scene.load.image('mouth-devious',"./img/mouth-devious.png");
         scene.load.image('mouth-sad',"./img/mouth-sad.png");
         scene.load.image('mouth-smile',"./img/mouth-smile.png");
+        scene.load.image('mouth-empty',"./img/mouth-empty.png");
 
 
         // Generic clothing
@@ -160,9 +240,10 @@ class MakeCharacter{
         scene.load.image('mask-extra-horn',"./img/mask-extra-horn.png");
         scene.load.image('mask-extra-star',"./img/mask-extra-star.png");
         scene.load.image('mask-extra-ex',"./img/mask-extra-ex.png");
+
+        // Extra mouths
+        scene.load.spritesheet('mouths',"./img/mouth-list.png",100,100,43);
+        scene.load.spritesheet('tears',"./img/tears.png",200,200,3);
     }
-
-
-
 
 }

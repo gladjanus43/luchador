@@ -15,9 +15,9 @@ class StoreScene extends Scene{
         this.load.image('store-button',"./img/store-button.png");
         this.load.image('power-button',"./img/power-button.png");
         this.load.image('power-up-button',"./img/power-up.png");
-        this.load.image('mask_one',"./img/new-mask-1.png");
-        this.load.image('mask_two',"./img/new-mask-2.png");
-        this.load.image('mask_three',"./img/new-mask-3.png");
+        this.load.image('horn',"./img/new-mask-1.png");
+        this.load.image('ex',"./img/new-mask-2.png");
+        this.load.image('star',"./img/new-mask-3.png");
         this.load.image('fire-power-up',"./img/fire-power-up.png");
         this.load.image('money-power-up',"./img/money-power-up.png");
 
@@ -101,14 +101,6 @@ class StoreScene extends Scene{
         }
     }
 
-    // private changeVisibiltyText(text:Phaser.Text[],val:boolean)
-    // {
-    //     for(let item of text){
-    //
-    //         item.visible = val;
-    //     }
-    // }
-
     private setUpPowerGroup(itemBox:Phaser.Sprite) {
         let firePower = new StoreItem("Vuur power",'fire-power-up',1000,itemBox,true,150,true);
         firePower.setUpItemActionOnClick(() => { mainGame.buyPower(firePower) });
@@ -123,17 +115,19 @@ class StoreScene extends Scene{
 
 
     private setUpMaskGroup(itemBox:Phaser.Sprite) {
-        let mask_one = new StoreItem("Masker 1", "mask_one",1000,itemBox,false,150,true);
+        let mask_one = new StoreItem("Masker 1", "horn",1000,itemBox,false,150,true);
         mask_one.setUpItemActionOnClick(() => { mainGame.buyMask(mask_one) });
         this.maskText.concat(mask_one.getTextArray());
         this.masks.push(mask_one);
 
-        let mask_two = new StoreItem("Masker 2", "mask_two",1000,itemBox,false,0,true);
+        console.log(mask_one.getButtonObject().key);
+
+        let mask_two = new StoreItem("Masker 2", "star",1000,itemBox,false,0,true);
         mask_two.setUpItemActionOnClick(() => { mainGame.buyMask(mask_two) });
         this.maskText.concat(mask_two.getTextArray());
         this.masks.push(mask_two);
 
-        let mask_three = new StoreItem("Masker 3", "mask_three",1000,itemBox,false,150,false);
+        let mask_three = new StoreItem("Masker 3", "ex",1000,itemBox,false,150,false);
         mask_three.setUpItemActionOnClick(() => { mainGame.buyMask(mask_three) });
         this.maskText.concat(mask_three.getTextArray());
         this.masks.push(mask_three);

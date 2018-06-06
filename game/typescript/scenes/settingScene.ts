@@ -10,12 +10,12 @@ class SettingScene extends Scene{
     create()
     {
         let character = new MakeCharacter('smile');
-        character.setMaskDecoration("mask-extra-ex",0,0);
+        character.setMaskDecoration("mask-extra-horn",0,0);
         character.changePantsColor("#2be28a");
         character.changeShoesColor("#E00707");
 
         setTimeout(() => {
-            character.changeMaskDecoration('mask-extra-horn',"#E00707");
+            character.changeMaskDecoration('mask-extra-star',"#E00707");
             character.changeSingleEye('left','sad','white');
             character.changeSingleEye('right','devious','blue');
 
@@ -24,6 +24,8 @@ class SettingScene extends Scene{
             console.log("dasssd");
 
         },1000);
+
+         // new Spreekwoord(this.world.centerX,this.world.centerY);
     }
 
 }
