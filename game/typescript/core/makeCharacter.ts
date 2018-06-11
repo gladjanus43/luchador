@@ -127,11 +127,13 @@ class MakeCharacter{
     changeMaskColor(color:string)
     {
         this.head.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.head.color = color;
     }
 
     changePantsColor(color:string)
     {
         this.pants.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.pants.color = color;
     }
 
     changeMouthEmotion(emotion:string)
@@ -159,19 +161,42 @@ class MakeCharacter{
     changeMaskDecoration(imgKey:string,color:string = '')
     {
         this.decoration.loadTexture("mask-extra-" + imgKey);
+        MainGame.character.head.mask = imgKey;
+
+
         if(color !== ''){
             this.decoration.tint = MakeCharacter.getColorCode(color);
+            MainGame.character.head.decorationColor = color;
+        }
+    }
+
+    matchCorrectColorChange(key:string, color:string)
+    {
+        let types ={
+            mask:   (color:string) => this.changeMaskColor(color),
+            extra:  (color:string) => this.changeMaskDecorationColor(color),
+            pants:  (color:string) => this.changePantsColor(color),
+            shoes:  (color:string) => this.changeShoesColor(color)
+        };
+
+        for(let type in types){
+            if(key.includes(type)){
+                types[type](color);
+                break;
+            }
         }
     }
 
     changeMaskDecorationColor(color:string)
     {
         this.decoration.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.head.decorationColor = color;
     }
 
     changeShoesColor(color:string)
     {
         this.shoes.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.shoes.color = color;
     }
 
     switchEyeColor(color:string)

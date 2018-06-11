@@ -38,7 +38,7 @@ class StoreScene extends Scene{
         this.setUpMaskGroup(itemBox);
 
 
-
+        console.log(MainGame.character);
     }
 
     private setUpOptionBox() {

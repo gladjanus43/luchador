@@ -13,7 +13,7 @@ class MainGame{
     static ownedMasks:StoreItem[] = [];
     static ownedPowers:StoreItem[] = [];
 
-    static character:object = {
+    static character:any = {
       head:{
           color: "#00b0e7",
           mask: "ex",

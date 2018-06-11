@@ -181,6 +181,8 @@ class PlayScene extends Scene {
         // music.play();
 
 
+        console.log(MainGame.character);
+
         this.character = new MakeCharacter('sad');
         this.character.changeMaskColor(MainGame.character.head.color);
         this.character.setMaskDecoration(MainGame.character.head.mask, 0, 0);
@@ -254,7 +256,6 @@ class PlayScene extends Scene {
         for(let color in this.colors){
             if(i != 0 && i % 33 == 0)
             {
-                console.log();
                 j++;
                 start = 0;
             }
@@ -263,8 +264,12 @@ class PlayScene extends Scene {
             colorBlock.anchor.set(0.5);
             colorBlock.inputEnabled = true;
             colorBlock.events.onInputUp.add(() => {
-                item.tint = MakeCharacter.getColorCode(this.colors[color]); 
 
+                let key = String(item.key);
+                if(key.includes('extra')){
+                    key = 'extra';
+                }
+                this.character.matchCorrectColorChange(key, this.colors[color]);
             });
 
             start++;

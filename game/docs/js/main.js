@@ -222,9 +222,11 @@ var MakeCharacter = (function () {
     };
     MakeCharacter.prototype.changeMaskColor = function (color) {
         this.head.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.head.color = color;
     };
     MakeCharacter.prototype.changePantsColor = function (color) {
         this.pants.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.pants.color = color;
     };
     MakeCharacter.prototype.changeMouthEmotion = function (emotion) {
         this.mouth.loadTexture('mouth-' + emotion);
@@ -242,15 +244,34 @@ var MakeCharacter = (function () {
     MakeCharacter.prototype.changeMaskDecoration = function (imgKey, color) {
         if (color === void 0) { color = ''; }
         this.decoration.loadTexture("mask-extra-" + imgKey);
+        MainGame.character.head.mask = imgKey;
         if (color !== '') {
             this.decoration.tint = MakeCharacter.getColorCode(color);
+            MainGame.character.head.decorationColor = color;
+        }
+    };
+    MakeCharacter.prototype.matchCorrectColorChange = function (key, color) {
+        var _this = this;
+        var types = {
+            mask: function (color) { return _this.changeMaskColor(color); },
+            extra: function (color) { return _this.changeMaskDecorationColor(color); },
+            pants: function (color) { return _this.changePantsColor(color); },
+            shoes: function (color) { return _this.changeShoesColor(color); }
+        };
+        for (var type in types) {
+            if (key.includes(type)) {
+                types[type](color);
+                break;
+            }
         }
     };
     MakeCharacter.prototype.changeMaskDecorationColor = function (color) {
         this.decoration.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.head.decorationColor = color;
     };
     MakeCharacter.prototype.changeShoesColor = function (color) {
         this.shoes.tint = MakeCharacter.getColorCode(color);
+        MainGame.character.shoes.color = color;
     };
     MakeCharacter.prototype.switchEyeColor = function (color) {
         this.leftEye.loadTexture('left-' + this.emotion + '-' + color);
@@ -700,6 +721,7 @@ var PlayScene = (function (_super) {
     };
     PlayScene.prototype.create = function () {
         var _this = this;
+        console.log(MainGame.character);
         this.character = new MakeCharacter('sad');
         this.character.changeMaskColor(MainGame.character.head.color);
         this.character.setMaskDecoration(MainGame.character.head.mask, 0, 0);
@@ -754,7 +776,6 @@ var PlayScene = (function (_super) {
         var start = 0;
         var _loop_1 = function (color) {
             if (i != 0 && i % 33 == 0) {
-                console.log();
                 j++;
                 start = 0;
             }
@@ -762,7 +783,11 @@ var PlayScene = (function (_super) {
             colorBlock.anchor.set(0.5);
             colorBlock.inputEnabled = true;
             colorBlock.events.onInputUp.add(function () {
-                item.tint = MakeCharacter.getColorCode(_this.colors[color]);
+                var key = String(item.key);
+                if (key.includes('extra')) {
+                    key = 'extra';
+                }
+                _this.character.matchCorrectColorChange(key, _this.colors[color]);
             });
             start++;
             i++;
@@ -981,6 +1006,7 @@ var StoreScene = (function (_super) {
         itemBox.anchor.setTo(0.5, 0.5);
         this.setUpPowerGroup(itemBox);
         this.setUpMaskGroup(itemBox);
+        console.log(MainGame.character);
     };
     StoreScene.prototype.setUpOptionBox = function () {
         var _this = this;
