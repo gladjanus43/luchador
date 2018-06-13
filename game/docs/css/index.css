@@ -9,8 +9,19 @@ body{
 bubble{
     display: block;
     position: absolute;
+    padding: 20px;
+    border: 2px solid black;
+    border-radius: 10px;
     top: 120px;
     left: 100px;
-    background-color: beige;
+    background-color: white;
     z-index: 10;
+}
+
+bubble > button{
+    margin-left: 10px;
+}
+
+p{
+    background-color: azure
 }
