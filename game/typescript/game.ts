@@ -51,4 +51,4 @@ class Game{
 }
 window.onload = function(){
     new Game();
-};
+}; 
