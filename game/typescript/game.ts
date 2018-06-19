@@ -1,6 +1,10 @@
 let game : Phaser.Game
 let sayings : Saying[];
+// let fallingGame : FallGame
+
 class Game{
+
+    fallingGame : FallGame
     /**
      * constructor for the game
      */
@@ -9,8 +13,14 @@ class Game{
             create  : this.create,
             preload : this.preload,
             update  : this.update
-        });
+        })
         sayings = []
+
+        this.fallingGame = new FallGame()
+
+        game.state.add('fallGame', this.fallingGame)
+        game.state.start('fallGame')
+        
         this.loadSayings();
     }
 
@@ -21,17 +31,16 @@ class Game{
     }
 
     pushSayings(dbResults:any){
-        console.log("klaar met laden");
         dbResults.forEach((saying : any) => {
             sayings.push(saying)
         });
     }
 
-    /**
-     * preload function of the game, here assets are loaded in
-     */
+    // /**
+    //  * preload function of the game, here assets are loaded in
+    //  */
     preload(){
-        console.log('preload');
+        // console.log('preload');
     } 
 
     /**
@@ -39,7 +48,7 @@ class Game{
      * here they get actually placed in the game
      */
     create(){
-        new Spreekwoord(200,200)
+        
     }
 
     /**
@@ -48,7 +57,8 @@ class Game{
     update(){
         
     }
-}
+}   
+
 window.onload = function(){
     new Game();
 }; 

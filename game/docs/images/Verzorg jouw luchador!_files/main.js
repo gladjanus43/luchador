@@ -27,16 +27,16 @@ var FallGame = (function (_super) {
         _this.ran = 0;
         _this.fallingSaying = '';
         _this.wasOn = false;
-        _this.scoreBoard = new Score();
-        _this.streak = 0;
-        _this.prevCorrect = false;
         return _this;
     }
     FallGame.prototype.preload = function () {
         game.load.image('bg', '../docs/images/sky.png');
-        this.fallingSaying = new FallingSaying(300, 0, this.correctAnswer);
         this.placeSayings();
+        this.fallingSaying = new FallingSaying(300, 0, this.correctAnswer);
         this.createArray();
+        for (var i = 0; i < 3; i++) {
+            console.log(this.boxes[i].dataset.boxNr);
+        }
     };
     FallGame.prototype.create = function () {
         game.add.image(0, 0, 'bg');
@@ -44,7 +44,6 @@ var FallGame = (function (_super) {
     FallGame.prototype.update = function () {
         this.fallingSaying.update();
         this.checkSayingTouchingBox();
-        console.log(this.prevCorrect);
     };
     FallGame.prototype.createArray = function () {
         this.correctAnswer = this.randomInt(0, 3);
@@ -98,11 +97,7 @@ var FallGame = (function (_super) {
                     this.createArray();
                     this.wasOn = true;
                     this.fallingSaying.resetPos();
-                    this.guessedCorrectAnswer();
                 }
-            }
-            else {
-                this.guessedWrong();
             }
         }
         else if (hit1 == true) {
@@ -111,11 +106,7 @@ var FallGame = (function (_super) {
                     this.createArray();
                     this.wasOn = true;
                     this.fallingSaying.resetPos();
-                    this.guessedCorrectAnswer();
                 }
-            }
-            else {
-                this.guessedWrong();
             }
         }
         else if (hit2 == true) {
@@ -124,32 +115,12 @@ var FallGame = (function (_super) {
                     this.createArray();
                     this.wasOn = true;
                     this.fallingSaying.resetPos();
-                    this.guessedCorrectAnswer();
                 }
-            }
-            else {
-                this.guessedWrong();
             }
         }
         else {
             this.wasOn = false;
         }
-    };
-    FallGame.prototype.guessedCorrectAnswer = function () {
-        if (this.streak == 0) {
-            this.scoreBoard.createNewBlock(550 - (this.streak * 50));
-            this.prevCorrect = true;
-            this.streak += 1;
-        }
-        else if (this.prevCorrect == true) {
-            this.scoreBoard.createNewBlock(550 - (this.streak * 50));
-            this.streak += 1;
-        }
-    };
-    FallGame.prototype.guessedWrong = function () {
-        this.streak = 0;
-        this.prevCorrect = false;
-        this.scoreBoard.removeScore();
     };
     return FallGame;
 }(Phaser.State));
@@ -180,6 +151,7 @@ var Game = (function () {
         });
     };
     Game.prototype.preload = function () {
+        console.log('preload');
     };
     Game.prototype.create = function () {
     };
@@ -197,6 +169,7 @@ var FallingSaying = (function () {
         this.speedY = 0;
         this.speedX = 0;
         this.correctAnswer = correctAnswer;
+        this.currentPos = 1;
         this.fallingSaying = document.createElement('falling');
         this.fallingSaying.style.top = this.posY + "px";
         this.create();
@@ -208,21 +181,23 @@ var FallingSaying = (function () {
         this.fallingSaying.dataset.correctAnswer = this.correctAnswer;
     };
     FallingSaying.prototype.keyDown = function (e) {
-        if (e.keyCode == 65) {
-            if (this.posX >= 300) {
+        if (this.posX >= 100 && this.posX <= 300) {
+            if (e.keyCode == 65) {
+                console.log(this.currentPos);
                 this.posX -= 200;
+                this.currentPos -= 1;
             }
-        }
-        if (e.keyCode == 68) {
-            if (this.posX <= 300) {
+            else if (e.keyCode == 68) {
+                console.log(this.currentPos);
                 this.posX += 200;
+                this.currentPos += 1;
             }
         }
     };
     FallingSaying.prototype.move = function () {
-        this.posY += 4;
+        this.posY += 2;
         this.fallingSaying.style.transform = "translate(" + this.posX + "px, " + this.posY + "px)";
-        if (this.posY > 500) {
+        if (this.posY > 600) {
             this.posY = 0;
         }
     };
@@ -248,28 +223,6 @@ var FallingSaying = (function () {
         this.posY = 0;
     };
     return FallingSaying;
-}());
-var Score = (function () {
-    function Score() {
-        this.streak = 0;
-        this.posX = 7;
-        this.posY = 550;
-    }
-    Score.prototype.createNewBlock = function (y) {
-        var element = document.createElement('scoreBlock');
-        document.body.appendChild(element);
-        element.style.left = this.posX + 'px';
-        element.style.top = y + 'px';
-    };
-    Score.prototype.getStreak = function () {
-        return this.streak;
-    };
-    Score.prototype.setStreak = function (int) {
-        this.streak = int;
-    };
-    Score.prototype.removeScore = function () {
-    };
-    return Score;
 }());
 var Spreekwoord = (function () {
     function Spreekwoord(x, y) {
