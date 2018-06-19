@@ -49,7 +49,7 @@ class FallGame extends Phaser.State{
     update(){
         this.fallingSaying.update()
         this.checkSayingTouchingBox()
-        console.log(this.prevCorrect);
+        // console.log(this.prevCorrect);
         
     }
 
@@ -150,21 +150,27 @@ class FallGame extends Phaser.State{
 
     guessedCorrectAnswer(){
         if(this.streak == 0){
-            this.scoreBoard.createNewBlock(550 - (this.streak * 50))
+            this.scoreBoard.createNewBlock(558 - (this.streak * 50))
             this.prevCorrect = true
             this.streak +=1
         }else if(this.prevCorrect == true){
-            this.scoreBoard.createNewBlock(550 - (this.streak * 50))
+            this.scoreBoard.createNewBlock(558 - (this.streak * 50))
             this.streak +=1
         }
+        console.log(this.streak);
+        if(this.streak == 5){
+            console.log('you finished the level!');
+        }        
     }
 
     guessedWrong(){
         this.streak = 0
         this.prevCorrect = false
-        this.scoreBoard.removeScore()
-    }
-    
+        let scoreblock = document.body.getElementsByTagName('scoreblock')
+        for(let i = 0; i < scoreblock.length; i++){
+            document.body.removeChild(scoreblock[i])
+        }
+    }    
 
     
 }

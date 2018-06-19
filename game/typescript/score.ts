@@ -22,8 +22,4 @@ class Score {
     setStreak(int : number){
         this.streak = int
     }
-
-    removeScore(){
-         
-    }
 }

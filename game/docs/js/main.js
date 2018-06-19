@@ -44,7 +44,6 @@ var FallGame = (function (_super) {
     FallGame.prototype.update = function () {
         this.fallingSaying.update();
         this.checkSayingTouchingBox();
-        console.log(this.prevCorrect);
     };
     FallGame.prototype.createArray = function () {
         this.correctAnswer = this.randomInt(0, 3);
@@ -137,19 +136,26 @@ var FallGame = (function (_super) {
     };
     FallGame.prototype.guessedCorrectAnswer = function () {
         if (this.streak == 0) {
-            this.scoreBoard.createNewBlock(550 - (this.streak * 50));
+            this.scoreBoard.createNewBlock(558 - (this.streak * 50));
             this.prevCorrect = true;
             this.streak += 1;
         }
         else if (this.prevCorrect == true) {
-            this.scoreBoard.createNewBlock(550 - (this.streak * 50));
+            this.scoreBoard.createNewBlock(558 - (this.streak * 50));
             this.streak += 1;
+        }
+        console.log(this.streak);
+        if (this.streak == 5) {
+            console.log('you finished the level!');
         }
     };
     FallGame.prototype.guessedWrong = function () {
         this.streak = 0;
         this.prevCorrect = false;
-        this.scoreBoard.removeScore();
+        var scoreblock = document.body.getElementsByTagName('scoreblock');
+        for (var i = 0; i < scoreblock.length; i++) {
+            document.body.removeChild(scoreblock[i]);
+        }
     };
     return FallGame;
 }(Phaser.State));
@@ -266,8 +272,6 @@ var Score = (function () {
     };
     Score.prototype.setStreak = function (int) {
         this.streak = int;
-    };
-    Score.prototype.removeScore = function () {
     };
     return Score;
 }());
