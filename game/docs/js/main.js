@@ -9,13 +9,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Scene = (function (_super) {
-    __extends(Scene, _super);
-    function Scene() {
-        return _super.call(this) || this;
-    }
-    return Scene;
-}(Phaser.State));
 var menuImageFallingGame;
 var buttonFallingGame;
 var FallGame = (function (_super) {
@@ -49,6 +42,7 @@ var FallGame = (function (_super) {
     FallGame.prototype.update = function () {
         this.fallingSaying.update();
         this.checkSayingTouchingBox();
+        this.finishedGame();
     };
     FallGame.prototype.createArray = function () {
         this.correctAnswer = this.randomInt(0, 3);
@@ -150,10 +144,6 @@ var FallGame = (function (_super) {
             this.streak += 1;
         }
         console.log(this.streak);
-        if (this.streak == 5) {
-            console.log('you finished the level!');
-            game.paused = true;
-        }
     };
     FallGame.prototype.guessedWrong = function () {
         this.streak = 0;
@@ -172,6 +162,23 @@ var FallGame = (function (_super) {
         menuImageFallingGame.destroy();
         buttonFallingGame.destroy();
         game.paused = false;
+    };
+    FallGame.prototype.removeElement = function (tag) {
+        var items = document.body.getElementsByTagName(tag);
+        for (var i = 0; i < items.length; i++) {
+            document.body.removeChild(items[i]);
+        }
+        console.log(items);
+    };
+    FallGame.prototype.finishedGame = function () {
+        var allElements = document.body.childNodes;
+        if (this.streak == 2) {
+            for (var i = allElements.length - 1; i >= 0; i--) {
+                if (allElements[i].nodeName != 'DIV') {
+                    document.body.removeChild(allElements[i]);
+                }
+            }
+        }
     };
     return FallGame;
 }(Phaser.State));

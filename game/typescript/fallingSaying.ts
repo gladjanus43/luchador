@@ -1,5 +1,6 @@
 let menuImageFallingGame : any
 let buttonFallingGame : any
+
 class FallGame extends Phaser.State{
     questions : Array <number>
     currentSayings : Array <Saying>
@@ -59,6 +60,8 @@ class FallGame extends Phaser.State{
         this.fallingSaying.update()
         this.checkSayingTouchingBox()
         // console.log(this.prevCorrect);
+
+        this.finishedGame()
         
     }
 
@@ -167,10 +170,7 @@ class FallGame extends Phaser.State{
             this.streak +=1
         }
         console.log(this.streak);
-        if(this.streak == 5){
-            console.log('you finished the level!');
-            game.paused = true;
-        }        
+               
     }
 
     guessedWrong(){
@@ -194,6 +194,26 @@ class FallGame extends Phaser.State{
         game.paused = false
     }
 
-    
-    
+    removeElement(tag : string){
+        let items = document.body.getElementsByTagName(tag)
+        for(let i = 0; i < items.length; i++){
+            document.body.removeChild(items[i])
+        }
+        console.log(items);
+    }
+
+    finishedGame(){
+        let allElements = document.body.childNodes
+        if(this.streak == 2){
+            for(let i = allElements.length-1; i>=0; i--){
+                if(allElements[i].nodeName != 'DIV'){
+                    document.body.removeChild(allElements[i])
+                }
+            }
+        } 
+    }
+
+
+
+    //end of file
 }
