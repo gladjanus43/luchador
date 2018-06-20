@@ -43,11 +43,11 @@ class FallingSaying{
     }
     
     move(){
-        this.posY += 4 //speed of falling saying
+        this.posY += 2 //speed of falling saying
         this.fallingSaying.style.transform = `translate(${this.posX}px, ${this.posY}px)`
         // console.log(this.posY);
 
-        if(this.posY > 500){
+        if(this.posY > 450){
             this.posY = 0
         }
         
@@ -77,6 +77,7 @@ class FallingSaying{
     setDataSet(number : any){
         this.fallingSaying.dataset.correctAnswer = number
     }
+
 
     resetPos(){
         this.posY = 0;

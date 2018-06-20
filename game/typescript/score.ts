@@ -4,7 +4,7 @@ class Score {
     posY : number
     constructor(){
         this.streak = 0
-        this.posX = 7
+        this.posX = 20
         this.posY = 550
     }
 

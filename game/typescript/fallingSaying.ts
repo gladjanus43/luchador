@@ -1,3 +1,5 @@
+let menuImageFallingGame : any
+let buttonFallingGame : any
 class FallGame extends Phaser.State{
     questions : Array <number>
     currentSayings : Array <Saying>
@@ -14,6 +16,9 @@ class FallGame extends Phaser.State{
     streak : number
     prevCorrect : boolean
 
+    menu : any
+    button : any
+
     constructor(){
         super()
         this.questions= []
@@ -29,21 +34,25 @@ class FallGame extends Phaser.State{
 
         this.streak = 0
         this.prevCorrect = false
+
+        
     }
 
     preload(){
         game.load.image('bg', '../docs/images/sky.png')
-
+        game.load.image('menu', '../docs/images/menu.png')
+        game.load.image('startButton', '../docs/images/startButton.png')
+        
         this.fallingSaying = new FallingSaying(300, 0, this.correctAnswer) 
-
-
         this.placeSayings()  
         this.createArray()
+
         
     }
 
     create(){
         game.add.image(0,0, 'bg')
+        this.createMenu()
     }
 
     update(){
@@ -87,7 +96,7 @@ class FallGame extends Phaser.State{
         for(let i = 0; i<3; i++){
             this.boxes.push(document.createElement('box'))
             this.boxes[i].style.left = 100+(i*200)+ "px"
-            this.boxes[i].style.top = "500px"
+            this.boxes[i].style.top = "450px"
             document.body.appendChild(this.boxes[i])
         }
     }
@@ -150,16 +159,17 @@ class FallGame extends Phaser.State{
 
     guessedCorrectAnswer(){
         if(this.streak == 0){
-            this.scoreBoard.createNewBlock(558 - (this.streak * 50))
+            this.scoreBoard.createNewBlock(550 - (this.streak * 50))
             this.prevCorrect = true
             this.streak +=1
         }else if(this.prevCorrect == true){
-            this.scoreBoard.createNewBlock(558 - (this.streak * 50))
+            this.scoreBoard.createNewBlock(550 - (this.streak * 50))
             this.streak +=1
         }
         console.log(this.streak);
         if(this.streak == 5){
             console.log('you finished the level!');
+            game.paused = true;
         }        
     }
 
@@ -172,5 +182,18 @@ class FallGame extends Phaser.State{
         }
     }    
 
+    createMenu(){
+        menuImageFallingGame = game.add.sprite(250,100, 'menu')
+        buttonFallingGame = game.add.button(350, 320, 'startButton', this.startGame)
+        game.paused = true; 
+    }
+
+    startGame(){
+        menuImageFallingGame.destroy()
+        buttonFallingGame.destroy()
+        game.paused = false
+    }
+
+    
     
 }
