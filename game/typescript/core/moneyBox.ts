@@ -9,4 +9,9 @@ class MoneyBox{
         this.posY = posY;
     }
 
+    setupMoneyBox(money:number)
+    {
+        let box = game.add.text("Geld: " + money);
+    }
+
 }

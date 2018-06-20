@@ -9,6 +9,196 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var menuImageFallingGame;
+var buttonFallingGame;
+var FallGame = (function (_super) {
+    __extends(FallGame, _super);
+    function FallGame() {
+        var _this = _super.call(this) || this;
+        _this.questions = [];
+        _this.currentSayings = [];
+        _this.boxes = [];
+        _this.correctAnswer = 0;
+        _this.ran = 0;
+        _this.fallingSaying = '';
+        _this.wasOn = false;
+        _this.scoreBoard = new Score();
+        _this.streak = 0;
+        _this.prevCorrect = false;
+        return _this;
+    }
+    FallGame.prototype.preload = function () {
+        game.load.image('bg', './images/sky.png');
+        game.load.image('menu', './images/menu.png');
+        game.load.image('startButton', './images/startButton.png');
+        this.load.image('quit', "./img/quit.png");
+        this.load.image('restart', "./img/restart.png");
+        this.fallingSaying = new FallingSaying(300, 0, this.correctAnswer);
+        this.placeSayings();
+        this.createArray();
+    };
+    FallGame.prototype.create = function () {
+        game.add.image(0, 0, 'bg');
+        this.createMenu();
+        this.setupRestartAndQuitButton();
+    };
+    FallGame.prototype.update = function () {
+        this.fallingSaying.update();
+        this.checkSayingTouchingBox();
+        this.finishedGame();
+    };
+    FallGame.prototype.createArray = function () {
+        this.correctAnswer = this.randomInt(0, 3);
+        this.questions = [];
+        this.currentSayings = [];
+        while (this.questions.length < 3) {
+            this.ran = this.randomInt(0, MainGame.sayings.length);
+            if (this.questions.indexOf(this.ran) == -1) {
+                this.questions.push(this.ran);
+            }
+        }
+        for (var i = 0; i < 3; i++) {
+            this.currentSayings.push(MainGame.sayings[this.questions[i]]);
+        }
+        for (var i = 0; i < 3; i++) {
+            this.boxes[i].innerHTML = this.currentSayings[i].antwoord;
+            this.boxes[i].dataset.boxNr = i;
+        }
+        this.fallingSaying.setInnerHtml(this.currentSayings[this.correctAnswer].spreekwoord);
+        this.fallingSaying.setDataSet(this.correctAnswer);
+    };
+    FallGame.prototype.randomInt = function (begin, end) {
+        var ran = Math.floor(Math.random() * end + begin);
+        return ran;
+    };
+    FallGame.prototype.placeSayings = function () {
+        this.boxes = [];
+        for (var i = 0; i < 3; i++) {
+            this.boxes.push(document.createElement('box'));
+            this.boxes[i].style.left = 100 + (i * 200) + "px";
+            this.boxes[i].style.top = "450px";
+            document.body.appendChild(this.boxes[i]);
+        }
+    };
+    FallGame.prototype.checkCollision = function (a, b) {
+        return (a.left <= b.right &&
+            b.left <= a.right &&
+            a.top <= b.bottom &&
+            b.top <= a.bottom);
+    };
+    FallGame.prototype.checkSayingTouchingBox = function () {
+        var hit0;
+        hit0 = this.checkCollision(this.fallingSaying.getRectangle(), this.boxes[0].getBoundingClientRect());
+        var hit1;
+        hit1 = this.checkCollision(this.fallingSaying.getRectangle(), this.boxes[1].getBoundingClientRect());
+        var hit2;
+        hit2 = this.checkCollision(this.fallingSaying.getRectangle(), this.boxes[2].getBoundingClientRect());
+        if (hit0 == true) {
+            if (this.fallingSaying.getDataSet() == this.boxes[0].dataset.boxNr) {
+                if (this.wasOn == false) {
+                    this.createArray();
+                    this.wasOn = true;
+                    this.fallingSaying.resetPos();
+                    this.guessedCorrectAnswer();
+                }
+            }
+            else {
+                this.guessedWrong();
+            }
+        }
+        else if (hit1 == true) {
+            if (this.fallingSaying.getDataSet() == this.boxes[1].dataset.boxNr) {
+                if (this.wasOn == false) {
+                    this.createArray();
+                    this.wasOn = true;
+                    this.fallingSaying.resetPos();
+                    this.guessedCorrectAnswer();
+                }
+            }
+            else {
+                this.guessedWrong();
+            }
+        }
+        else if (hit2 == true) {
+            if (this.fallingSaying.getDataSet() == this.boxes[2].dataset.boxNr) {
+                if (this.wasOn == false) {
+                    this.createArray();
+                    this.wasOn = true;
+                    this.fallingSaying.resetPos();
+                    this.guessedCorrectAnswer();
+                }
+            }
+            else {
+                this.guessedWrong();
+            }
+        }
+        else {
+            this.wasOn = false;
+        }
+    };
+    FallGame.prototype.guessedCorrectAnswer = function () {
+        if (this.streak == 0) {
+            this.scoreBoard.createNewBlock(550 - (this.streak * 50));
+            this.prevCorrect = true;
+            this.streak += 1;
+        }
+        else if (this.prevCorrect == true) {
+            this.scoreBoard.createNewBlock(550 - (this.streak * 50));
+            this.streak += 1;
+        }
+    };
+    FallGame.prototype.finishedGame = function () {
+        if (this.streak == 5) {
+            var allElements = document.body.childNodes;
+            for (var i = allElements.length - 1; i >= 0; i--) {
+                if (allElements[i].nodeName != 'DIV') {
+                    document.body.removeChild(allElements[i]);
+                }
+            }
+            this.game.state.start('playScene', true, false);
+        }
+    };
+    FallGame.prototype.removeElement = function (tag) {
+        var items = document.body.getElementsByTagName(tag);
+        for (var i = 0; i < items.length; i++) {
+            document.body.removeChild(items[i]);
+        }
+    };
+    FallGame.prototype.guessedWrong = function () {
+        this.streak = 0;
+        this.prevCorrect = false;
+        var scoreblock = document.body.getElementsByTagName('scoreblock');
+        for (var i = 0; i < scoreblock.length; i++) {
+            document.body.removeChild(scoreblock[i]);
+        }
+    };
+    FallGame.prototype.createMenu = function () {
+        menuImageFallingGame = game.add.sprite(250, 100, 'menu');
+        buttonFallingGame = game.add.button(350, 320, 'startButton', this.startGame);
+        game.paused = true;
+    };
+    FallGame.prototype.startGame = function () {
+        menuImageFallingGame.destroy();
+        buttonFallingGame.destroy();
+        game.paused = false;
+    };
+    FallGame.prototype.setupRestartAndQuitButton = function () {
+        var quit = game.add.button(60, 20, 'quit', function () {
+            var e = new Event('quit_game');
+            document.body.dispatchEvent(e);
+        });
+        quit.anchor.set(0.5);
+        quit.scale.set(0.06);
+        new Phasetips(this.game, {
+            targetObject: quit,
+            context: 'Stoppen',
+            strokeColor: '#c1e5c1',
+            x: quit.left - 10,
+            y: quit.centerY + 20
+        });
+    };
+    return FallGame;
+}(Phaser.State));
 var game;
 var homeScene;
 var playScene;
@@ -18,9 +208,11 @@ var storeScene;
 var minigames;
 var gameScene;
 var mainGame;
+var fallingGameScene;
+var basketScene;
 var MainGame = (function () {
     function MainGame() {
-        this.playerMoney = 5000;
+        this.playerMoney = 15000;
         homeScene = new HomeScene();
         playScene = new PlayScene();
         settingScene = new SettingScene();
@@ -28,7 +220,9 @@ var MainGame = (function () {
         gameScene = new GameScene();
         platformer = new Platformer();
         minigames = new MiniScene();
-        game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+        basketScene = new BasketScene();
+        fallingGameScene = new FallGame();
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', {
             preload: this.preload,
             create: this.create,
             update: this.update
@@ -85,6 +279,8 @@ var MainGame = (function () {
         game.state.add('storeScene', StoreScene);
         game.state.add('platformer', Platformer);
         game.state.add('minigames', minigames);
+        game.state.add('basketScene', basketScene);
+        game.state.add('fallgame', fallingGameScene);
         game.state.start('homeScene');
     };
     MainGame.prototype.update = function () {
@@ -110,41 +306,154 @@ var MainGame = (function () {
 window.onload = function () {
     mainGame = new MainGame();
 };
+var FallingSaying = (function () {
+    function FallingSaying(x, y, correctAnswer) {
+        this.posX = x;
+        this.posY = y;
+        this.speedY = 0;
+        this.speedX = 0;
+        this.correctAnswer = correctAnswer;
+        this.fallingSaying = document.createElement('falling');
+        this.fallingSaying.style.top = this.posY + "px";
+        this.create();
+        window.addEventListener('keydown', this.keyDown.bind(this));
+    }
+    FallingSaying.prototype.create = function () {
+        document.body.appendChild(this.fallingSaying);
+        this.fallingSaying.innerHTML = '';
+        this.fallingSaying.dataset.correctAnswer = this.correctAnswer;
+    };
+    FallingSaying.prototype.keyDown = function (e) {
+        if (e.keyCode == 65) {
+            if (this.posX >= 300) {
+                this.posX -= 200;
+            }
+        }
+        if (e.keyCode == 68) {
+            if (this.posX <= 300) {
+                this.posX += 200;
+            }
+        }
+    };
+    FallingSaying.prototype.move = function () {
+        this.posY += 2;
+        this.fallingSaying.style.transform = "translate(" + this.posX + "px, " + this.posY + "px)";
+        if (this.posY > 450) {
+            this.posY = 0;
+        }
+    };
+    FallingSaying.prototype.update = function () {
+        this.move();
+    };
+    FallingSaying.prototype.getRectangle = function () {
+        return this.fallingSaying.getBoundingClientRect();
+    };
+    FallingSaying.prototype.getInnerHtml = function () {
+        return this.fallingSaying.innerHTML;
+    };
+    FallingSaying.prototype.setInnerHtml = function (string) {
+        this.fallingSaying.innerHTML = string;
+    };
+    FallingSaying.prototype.getDataSet = function () {
+        return this.fallingSaying.dataset.correctAnswer;
+    };
+    FallingSaying.prototype.setDataSet = function (number) {
+        this.fallingSaying.dataset.correctAnswer = number;
+    };
+    FallingSaying.prototype.resetPos = function () {
+        this.posY = 0;
+    };
+    return FallingSaying;
+}());
+var Score = (function () {
+    function Score() {
+        this.streak = 0;
+        this.posX = 20;
+        this.posY = 550;
+    }
+    Score.prototype.createNewBlock = function (y) {
+        var element = document.createElement('scoreBlock');
+        document.body.appendChild(element);
+        element.style.left = this.posX + 'px';
+        element.style.top = y + 'px';
+    };
+    Score.prototype.getStreak = function () {
+        return this.streak;
+    };
+    Score.prototype.setStreak = function (int) {
+        this.streak = int;
+    };
+    return Score;
+}());
 var Spreekwoord = (function () {
     function Spreekwoord(x, y) {
         this.posX = x;
         this.posY = y;
-        this.sayings = [];
+        this.questions = [];
+        this.currentSayings = [];
+        this.correctAnswer = this.randomInt(0, 3);
         this.element = document.createElement("bubble");
-        this.button = document.createElement("button");
-        this.loadSayings();
+        this.span = document.createElement("span");
+        this.button1 = document.createElement("button");
+        this.button2 = document.createElement("button");
+        this.button3 = document.createElement("button");
+        this.createArray();
+        this.createBubble();
     }
     Spreekwoord.prototype.loadSayings = function () {
         var _this = this;
-        fetch("http://luchador.local/connection.php")
+        fetch("http://localhost/Luchador/luchador/game/docs/connection.php")
             .then(function (res) { return res.json(); })
             .then(function (res) { return _this.pushSayings(res); });
     };
     Spreekwoord.prototype.pushSayings = function (dbResults) {
-        var _this = this;
         console.log("klaar met laden");
         dbResults.forEach(function (saying) {
-            _this.sayings.push(saying);
+            sayings.push(saying);
         });
-        this.createBubble();
     };
     Spreekwoord.prototype.createBubble = function () {
-        var bubble = document.getElementById('content');
-        bubble.appendChild(this.element);
+        this.element.addEventListener('click', this.changeInnerText.bind(this));
+        var gameCanvas = document.getElementById('content');
+        gameCanvas.appendChild(this.element);
+        this.element.appendChild(this.span);
         this.element.style.left = this.posX + "px";
         this.element.style.top = this.posY + "px";
-        this.element.innerHTML = "test";
-        this.element.appendChild(this.button);
-        this.button.innerHTML = "Volgende Gezegde";
-        this.button.addEventListener('click', this.clickSuccesHandler);
+        this.element.appendChild(this.button1);
+        this.element.appendChild(this.button2);
+        this.element.appendChild(this.button3);
     };
-    Spreekwoord.prototype.clickSuccesHandler = function () {
-        console.log('Je hebt het goed geraden!');
+    Spreekwoord.prototype.changeInnerText = function (e) {
+        if (e.target.nodeName == "BUTTON") {
+            if (this.currentSayings[this.correctAnswer].antwoord == e.target.innerHTML) {
+                this.createArray();
+            }
+        }
+    };
+    Spreekwoord.prototype.createArray = function () {
+        this.correctAnswer = this.randomInt(0, 3);
+        this.questions = [];
+        this.currentSayings = [];
+        while (this.questions.length < 3) {
+            this.ran = this.randomInt(0, sayings.length);
+            if (this.questions.indexOf(this.ran) == -1) {
+                this.questions.push(this.ran);
+            }
+        }
+        for (var i = 0; i < 3; i++) {
+            this.currentSayings.push(sayings[this.questions[i]]);
+        }
+        this.fillButtons();
+    };
+    Spreekwoord.prototype.fillButtons = function () {
+        this.span.innerHTML = this.currentSayings[this.correctAnswer].spreekwoord;
+        this.button1.innerHTML = this.currentSayings[0].antwoord;
+        this.button2.innerHTML = this.currentSayings[1].antwoord;
+        this.button3.innerHTML = this.currentSayings[2].antwoord;
+    };
+    Spreekwoord.prototype.randomInt = function (begin, end) {
+        var ran = Math.floor(Math.random() * end + begin);
+        return ran;
     };
     return Spreekwoord;
 }());
@@ -333,6 +642,270 @@ var MakeCharacter = (function () {
         scene.load.spritesheet('tears', "./img/tears.png", 200, 200, 3);
     };
     return MakeCharacter;
+}());
+var MakePlatformLevel = (function () {
+    function MakePlatformLevel(scene, background, playerPos, ledges, event) {
+        if (playerPos === void 0) { playerPos = { x: 0, y: 0 }; }
+        this.facing = 'left';
+        this.jumpTimer = 0;
+        this.collectedWords = [];
+        this.appendedChildren = [];
+        this.islandTypes = [
+            {
+                name: 'island-1',
+                type: 'platforms',
+                scale: 0.2
+            },
+            {
+                name: 'island-2',
+                type: 'fallingPlatforms',
+                scale: 0.15
+            },
+            {
+                name: 'island-3',
+                type: 'risingPlatforms',
+                scale: 0.45
+            }
+        ];
+        this.positions = [];
+        this.scene = scene;
+        this.playerPosition = playerPos;
+        this.positions = ledges;
+        this.event = event;
+        this.background = background;
+    }
+    MakePlatformLevel.prototype.setupLevel = function (ground) {
+        if (ground === void 0) { ground = 'ground'; }
+        this.sayings = MainGame.sayings;
+        this.createBackground();
+        this.setupRestartAndQuitButton();
+        this.setupGroups();
+        this.setupGround(ground);
+        this.setupLedges();
+        this.setupEnding();
+        this.setupPlayer();
+        this.setupWords();
+    };
+    MakePlatformLevel.prototype.createBackground = function () {
+        var background = this.scene.add.tileSprite(0, 0, this.scene.game.world.centerX, this.scene.game.world.centerY, this.background);
+        background.scale.set(2.5, 2.5);
+        background.fixedToCamera = true;
+    };
+    MakePlatformLevel.prototype.setupGroups = function () {
+        this.platforms = game.add.group();
+        this.platforms.enableBody = true;
+        this.risingPlatforms = game.add.group();
+        this.risingPlatforms.enableBody = true;
+        this.fallingPlatforms = game.add.group();
+        this.fallingPlatforms.enableBody = true;
+        this.words = game.add.group();
+        this.words.enableBody = true;
+    };
+    MakePlatformLevel.prototype.setupRestartAndQuitButton = function () {
+        var restart = game.add.button(20, 20, 'restart', function () {
+            var e = new Event('restart_game');
+            document.body.dispatchEvent(e);
+        });
+        restart.anchor.set(0.5);
+        restart.scale.set(0.06);
+        new Phasetips(this.scene.game, {
+            targetObject: restart,
+            context: 'Opnieuw',
+            strokeColor: '#c1e5c1',
+            x: restart.left - 10,
+            y: restart.centerY + 20
+        });
+        var quit = game.add.button(60, 20, 'quit', function () {
+            var e = new Event('quit_game');
+            document.body.dispatchEvent(e);
+        });
+        quit.anchor.set(0.5);
+        quit.scale.set(0.06);
+        new Phasetips(this.scene.game, {
+            targetObject: quit,
+            context: 'Stoppen',
+            strokeColor: '#c1e5c1',
+            x: quit.left - 10,
+            y: quit.centerY + 20
+        });
+    };
+    MakePlatformLevel.prototype.setupGround = function (key) {
+        var ground = this.platforms.create(100, 590, this.scene.createBlock(10, 1600, ''));
+        ground.anchor.set(0.5);
+        ground.body.immovable = true;
+        ground.body.moves = false;
+        var groundCover = game.add.sprite(ground.centerX, ground.centerY - 5, key);
+        groundCover.scale.setTo(2, 0.2);
+        groundCover.anchor.set(0.5);
+    };
+    MakePlatformLevel.prototype.setupLedges = function () {
+        for (var _i = 0, _a = this.positions; _i < _a.length; _i++) {
+            var pos = _a[_i];
+            var island = this.getIsland(pos.key);
+            var ledge = this[String(island.type)].create(pos.x, pos.y, this.scene.createBlock(10, 110, ''));
+            ledge.anchor.set(0.5);
+            ledge.body.immovable = true;
+            ledge.body.moves = false;
+            var cover = game.add.sprite(0, 0, island.name);
+            cover.scale.set(island.scale);
+            cover.anchor.set(0.5);
+            ledge.body.collideWorldBounds = true;
+            ledge.addChild(cover);
+        }
+    };
+    MakePlatformLevel.prototype.setupEnding = function () {
+        var marker = game.add.sprite(0, 0, 'flag');
+        var ending = this.platforms.create(750, 125, this.scene.createBlock(10, 120, ''));
+        ending.anchor.set(0.5);
+        ending.body.immovable = true;
+        ending.body.moves = false;
+        var island = game.add.sprite(ending.centerX, ending.centerY - 10, 'end-platform');
+        island.scale.set(0.3);
+        island.anchor.set(0.5);
+        marker.scale.set(0.08);
+        marker.anchor.set(0.5);
+        marker.alignTo(ending, Phaser.CENTER, 0, 0);
+        this.flag = this.words.create(0, 0, this.scene.createBlock(37, 56, ''));
+        this.flag.anchor.set(0.5);
+        this.flag.alignTo(marker, Phaser.CENTER, -30, -45);
+        this.flag.body.gravity = 0;
+        this.flag.spriteName = 'flag';
+    };
+    MakePlatformLevel.prototype.getIsland = function (name) {
+        return this.islandTypes.find(function (island) {
+            return island.name == name;
+        });
+    };
+    MakePlatformLevel.prototype.setupWords = function () {
+        var random = Math.floor(Math.random() * this.sayings.length);
+        var sentence = this.sayings[random];
+        for (var _i = 0, _a = sentence.spreekwoord.split(" "); _i < _a.length; _i++) {
+            var word = _a[_i];
+            var text = game.add.text(0, 0, word, { font: 'bold 24px Arial', fill: "#ff346d", align: 'center' });
+            var sprite = this.words.create(Math.floor(Math.random() * game.world.width), -400, this.scene.createBlock(50, 20, ''));
+            sprite.addChild(text);
+            sprite.body.gravity.y = 100;
+            sprite.body.bounce.y = 0.5;
+            sprite.body.collideWorldBounds = true;
+            sprite.spriteText = word;
+            sprite.spriteName = 'words';
+        }
+    };
+    MakePlatformLevel.prototype.setupPlayer = function () {
+        this.player = this.scene.add.sprite(this.playerPosition.x, this.playerPosition.y, this.scene.createBlock(20, 20, '#5DBCD2'));
+        this.scene.game.physics.enable(this.player, Phaser.Physics.ARCADE);
+        game.physics.arcade.gravity.y = 250;
+        this.player.body.bounce.y = 0.2;
+        this.player.body.collideWorldBounds = true;
+        this.player.body.setSize(20, 32);
+        this.cursors = game.input.keyboard.createCursorKeys();
+        this.jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.parts = this.scene.add.sprite(0, 0, this.scene.createBlock(10, 10, '#ffffff'));
+    };
+    MakePlatformLevel.prototype.setupPlayerControls = function () {
+        this.player.body.velocity.x = 0;
+        if (this.cursors.left.isDown) {
+            this.player.body.velocity.x = -150;
+            if (this.facing != 'left') {
+                this.facing = 'left';
+            }
+        }
+        else if (this.cursors.right.isDown) {
+            this.player.body.velocity.x = 150;
+            if (this.facing != 'right') {
+                this.facing = 'right';
+            }
+        }
+        else {
+            if (this.facing != 'idle') {
+                if (this.facing == 'left') {
+                    this.player.frame = 0;
+                }
+                else {
+                    this.player.frame = 5;
+                }
+                this.facing = 'idle';
+            }
+        }
+        if (this.jumpButton.isDown && (this.player.body.onFloor() || this.player.body.touching.down) && game.time.now > this.jumpTimer) {
+            this.player.body.velocity.y = -250;
+            this.jumpTimer = game.time.now + 750;
+        }
+    };
+    MakePlatformLevel.prototype.risePlatform = function (player, platform) {
+        console.log('rise');
+        platform.body.immovable = false;
+        platform.y -= 1;
+    };
+    MakePlatformLevel.prototype.dropPlatform = function (player, platform) {
+        platform.body.immovable = false;
+        platform.y += 1;
+    };
+    MakePlatformLevel.prototype.setupCollisionAndOverlaps = function () {
+        game.physics.arcade.collide(this.player, this.platforms);
+        game.physics.arcade.collide(this.player, this.risingPlatforms, this.risePlatform);
+        game.physics.arcade.collide(this.player, this.fallingPlatforms, this.dropPlatform);
+        game.physics.arcade.collide(this.words, this.platforms);
+        game.physics.arcade.overlap(this.player, this.words, this.collectWords, undefined, this);
+        game.physics.arcade.overlap(this.player, this.flag, this.reachedEnding, undefined, this);
+    };
+    MakePlatformLevel.prototype.update = function () {
+        this.setupCollisionAndOverlaps();
+        this.parts.alignIn(this.player, Phaser.CENTER, 0, 0);
+        this.setupPlayerControls();
+    };
+    MakePlatformLevel.prototype.collectWords = function (player, word) {
+        if (word.spriteText) {
+            this.collectedWords.push(word.spriteText);
+            word.kill();
+        }
+    };
+    MakePlatformLevel.prototype.reachedEnding = function (player, word) {
+        var _this = this;
+        if (word.spriteName !== null) {
+            var pop = game.add.sprite(game.world.centerX, game.world.centerY, this.scene.createBlock(350, 500, ''));
+            pop.anchor.set(0.5);
+            var para = game.add.sprite(game.world.centerX, game.world.centerY, this.scene.createBlock(300, 600, ''));
+            para.anchor.set(0.5);
+            var paraText = this.scene.createTextBlock('Je hebt nieuwe woorden vrijgespeeld. Deze spelen weer nieuwe spreekwoorden vrij.', 400, 400);
+            paraText.alignIn(para, Phaser.TOP_CENTER, 50, 0);
+            var nextBox = game.add.sprite(game.world.centerX, game.world.centerY, this.scene.createBlock(40, 80, ''));
+            nextBox.anchor.set(0.5);
+            var nextCover = game.add.button(0, 0, 'arrow-button', function () {
+                if (_this.event != false) {
+                    var e = new Event(_this.event);
+                    document.body.dispatchEvent(e);
+                }
+                else {
+                    _this.scene.switchScenes('minigames');
+                }
+            });
+            nextCover.anchor.set(0.5);
+            nextCover.scale.set(0.2);
+            nextCover.alignIn(nextBox, Phaser.CENTER, 0, 0);
+            new Phasetips(this.scene.game, {
+                targetObject: nextCover,
+                context: 'Volgende level',
+                strokeColor: '#c1e5c1',
+                x: nextCover.left - 10,
+                y: nextCover.centerY + 20
+            });
+            nextBox.alignIn(pop, Phaser.BOTTOM_CENTER, 0, 0);
+        }
+    };
+    return MakePlatformLevel;
+}());
+var MoneyBox = (function () {
+    function MoneyBox(posX, posY) {
+        if (posX === void 0) { posX = 10; }
+        if (posY === void 0) { posY = 50; }
+        this.posX = posX;
+        this.posY = posY;
+    }
+    MoneyBox.prototype.setupMoneyBox = function (money) {
+        var box = game.add.text("Geld: " + money);
+    };
+    return MoneyBox;
 }());
 var Scene = (function (_super) {
     __extends(Scene, _super);
@@ -576,6 +1149,71 @@ var HomeScene = (function (_super) {
         text.fill = '#00ff44';
     };
     return HomeScene;
+}(Scene));
+var MiniScene = (function (_super) {
+    __extends(MiniScene, _super);
+    function MiniScene() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    MiniScene.prototype.preload = function () {
+        this.load.image('arrow-button', "./img/arrow-button.png");
+        this.load.image('background', "./img/background-3.jpg");
+        this.load.image('jump', "./img/jump.png");
+        this.load.image('basketball', "./img/basketball.png");
+        this.load.image('quiz', "./img/quiz.png");
+        this.load.image('game-button', "./img/game-button.png");
+    };
+    MiniScene.prototype.create = function () {
+        var _this = this;
+        var background = this.add.tileSprite(0, 0, this.game.world.centerX, this.game.world.centerY, 'background');
+        background.scale.set(2.5, 2.5);
+        var title = game.add.sprite(600, 50, 'game-button');
+        title.scale.set(0.06);
+        title.anchor.set(0.5);
+        var titleText = this.createTextBlock('Spelletjes', 30, 400);
+        titleText.alignTo(title, Phaser.CENTER, -100, -45);
+        var jumpButton = game.add.button(250, 150, 'jump', function () { _this.switchScenes('platformer'); });
+        jumpButton.scale.set(0.2);
+        jumpButton.anchor.set(0.5);
+        var jumpText = this.createTextBlock('Lekker rond springen', 30, 400);
+        jumpText.alignTo(jumpButton, Phaser.CENTER, -150, -80);
+        jumpText.inputEnabled = true;
+        jumpText.events.onInputUp.add(function () { _this.switchScenes('platformer'); }, this);
+        var ballButton = game.add.button(250, 150 + jumpButton.height, 'basketball', function () { _this.switchScenes('basketScene'); });
+        ballButton.scale.set(0.2);
+        ballButton.anchor.set(0.5);
+        var ballText = this.createTextBlock('Basketballen', 30, 400);
+        ballText.alignTo(ballButton, Phaser.CENTER, -150, -80);
+        ballText.inputEnabled = true;
+        ballText.events.onInputUp.add(function () { _this.switchScenes('basketScene'); }, this);
+        var quizButton = game.add.button(250, 150 + jumpButton.height + ballButton.height, 'quiz', function () { _this.switchScenes('fallgame'); });
+        quizButton.scale.set(0.2);
+        quizButton.anchor.set(0.5);
+        var quizText = this.createTextBlock('quiz', 30, 400);
+        quizText.alignTo(quizButton, Phaser.CENTER, -150, -80);
+        quizText.inputEnabled = true;
+        quizText.events.onInputUp.add(function () { _this.switchScenes('fallgame'); }, this);
+        this.setUpBackButton();
+    };
+    MiniScene.prototype.setUpBackButton = function () {
+        var _this = this;
+        var backBox = game.add.sprite(game.world.centerX - 360, game.world.centerY - 250, this.createBlock(50, 100, ''));
+        backBox.anchor.setTo(0.5, 0.5);
+        var backButton = game.add.button(backBox.centerX, backBox.centerY, 'arrow-button', function () {
+            _this.switchScenes('playScene');
+        }, this);
+        backButton.scale.setTo(0.1, 0.1);
+        backButton.anchor.setTo(0.5, 0.5);
+        backButton.rotation = 3.15;
+        new Phasetips(this.game, {
+            targetObject: backButton,
+            context: 'terug',
+            strokeColor: 0xff0000,
+            x: backButton.left - 10,
+            y: backButton.centerY + 20
+        });
+    };
+    return MiniScene;
 }(Scene));
 var Platformer = (function (_super) {
     __extends(Platformer, _super);
@@ -1384,143 +2022,147 @@ var StoreScene = (function (_super) {
     };
     return StoreScene;
 }(Scene));
-var MiniScene = (function (_super) {
-    __extends(MiniScene, _super);
-    function MiniScene() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var FallGameScene = (function (_super) {
+    __extends(FallGameScene, _super);
+    function FallGameScene() {
+        return _super.call(this) || this;
     }
-    MiniScene.prototype.preload = function () {
-        this.load.image('arrow-button', "./img/arrow-button.png");
-        this.load.image('background', "./img/background-3.jpg");
-        this.load.image('jump', "./img/jump.png");
-        this.load.image('basketball', "./img/basketball.png");
-        this.load.image('quiz', "./img/quiz.png");
-        this.load.image('game-button', "./img/game-button.png");
-    };
-    MiniScene.prototype.create = function () {
-        var _this = this;
-        var background = this.add.tileSprite(0, 0, this.game.world.centerX, this.game.world.centerY, 'background');
-        background.scale.set(2.5, 2.5);
-        var title = game.add.sprite(600, 50, 'game-button');
-        title.scale.set(0.06);
-        title.anchor.set(0.5);
-        var titleText = this.createTextBlock('Spelletjes', 30, 400);
-        titleText.alignTo(title, Phaser.CENTER, -100, -45);
-        var jumpButton = game.add.button(250, 150, 'jump', function () { _this.switchScenes('platformer'); });
-        jumpButton.scale.set(0.2);
-        jumpButton.anchor.set(0.5);
-        var jumpText = this.createTextBlock('Lekker rond springen', 30, 400);
-        jumpText.alignTo(jumpButton, Phaser.CENTER, -150, -80);
-        jumpText.inputEnabled = true;
-        jumpText.events.onInputUp.add(function () { _this.switchScenes('platformer'); }, this);
-        var ballButton = game.add.button(250, 150 + jumpButton.height, 'basketball', function () { _this.switchScenes(''); });
-        ballButton.scale.set(0.2);
-        ballButton.anchor.set(0.5);
-        var ballText = this.createTextBlock('Basketballen', 30, 400);
-        ballText.alignTo(ballButton, Phaser.CENTER, -150, -80);
-        ballText.inputEnabled = true;
-        ballText.events.onInputUp.add(function () { _this.switchScenes(''); }, this);
-        var quizButton = game.add.button(250, 150 + jumpButton.height + ballButton.height, 'quiz', function () { _this.switchScenes(''); });
-        quizButton.scale.set(0.2);
-        quizButton.anchor.set(0.5);
-        var quizText = this.createTextBlock('quiz', 30, 400);
-        quizText.alignTo(quizButton, Phaser.CENTER, -150, -80);
-        quizText.inputEnabled = true;
-        quizText.events.onInputUp.add(function () { _this.switchScenes(''); }, this);
-        this.setUpBackButton();
-    };
-    MiniScene.prototype.setUpBackButton = function () {
-        var _this = this;
-        var backBox = game.add.sprite(game.world.centerX - 360, game.world.centerY - 250, this.createBlock(50, 100, ''));
-        backBox.anchor.setTo(0.5, 0.5);
-        var backButton = game.add.button(backBox.centerX, backBox.centerY, 'arrow-button', function () {
-            _this.switchScenes('playScene');
-        }, this);
-        backButton.scale.setTo(0.1, 0.1);
-        backButton.anchor.setTo(0.5, 0.5);
-        backButton.rotation = 3.15;
-        new Phasetips(this.game, {
-            targetObject: backButton,
-            context: 'terug',
-            strokeColor: 0xff0000,
-            x: backButton.left - 10,
-            y: backButton.centerY + 20
-        });
-    };
-    return MiniScene;
+    return FallGameScene;
 }(Scene));
-var MakePlatformLevel = (function () {
-    function MakePlatformLevel(scene, background, playerPos, ledges, event) {
-        if (playerPos === void 0) { playerPos = { x: 0, y: 0 }; }
-        this.facing = 'left';
-        this.jumpTimer = 0;
-        this.collectedWords = [];
-        this.appendedChildren = [];
-        this.islandTypes = [
-            {
-                name: 'island-1',
-                type: 'platforms',
-                scale: 0.2
-            },
-            {
-                name: 'island-2',
-                type: 'fallingPlatforms',
-                scale: 0.15
-            },
-            {
-                name: 'island-3',
-                type: 'risingPlatforms',
-                scale: 0.45
-            }
-        ];
-        this.positions = [];
-        this.scene = scene;
-        this.playerPosition = playerPos;
-        this.positions = ledges;
-        this.event = event;
-        this.background = background;
+var BasketScene = (function (_super) {
+    __extends(BasketScene, _super);
+    function BasketScene() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.current_score = 0;
+        _this.high_score = 0;
+        _this.isDown = false;
+        return _this;
     }
-    MakePlatformLevel.prototype.setupLevel = function (ground) {
-        if (ground === void 0) { ground = 'ground'; }
-        this.sayings = MainGame.sayings;
-        this.createBackground();
-        this.setupRestartAndQuitButton();
-        this.setupGroups();
-        this.setupGround(ground);
-        this.setupLedges();
-        this.setupEnding();
-        this.setupPlayer();
-        this.setupWords();
+    BasketScene.prototype.preload = function () {
+        game.load.image('ball', 'images/ball.png');
+        game.load.image('hoop', 'images/hoop.png');
+        game.load.image('side rim', 'images/side_rim.png');
+        game.load.image('front rim', 'images/front_rim.png');
+        this.load.image('quit', "./img/quit.png");
+        this.load.image('restart', "./img/restart.png");
     };
-    MakePlatformLevel.prototype.createBackground = function () {
-        var background = this.scene.add.tileSprite(0, 0, this.scene.game.world.centerX, this.scene.game.world.centerY, this.background);
-        background.scale.set(2.5, 2.5);
-        background.fixedToCamera = true;
+    BasketScene.prototype.create = function () {
+        game.physics.startSystem(Phaser.Physics.P2JS);
+        game.physics.p2.setImpactEvents(true);
+        game.physics.p2.restitution = 0.63;
+        game.physics.p2.gravity.y = 0;
+        this.collisionGroup = game.physics.p2.createCollisionGroup();
+        this.backboard = game.add.audio('backboard');
+        this.spawn = game.add.audio('spawn');
+        game.stage.backgroundColor = "#ffffff";
+        this.current_score_text = game.add.text(187, 312, '', { font: 'Arial', fontSize: '40px', fill: '#000', align: 'center' });
+        this.current_best_text = game.add.text(143, 281, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });
+        this.current_best_score_text = game.add.text(187, 312, '', { font: 'Arial', fontSize: '40px', fill: '#00e6e6', align: 'center' });
+        this.hoop = game.add.sprite(88, 62, 'hoop');
+        this.left_rim = game.add.sprite(150, 184, 'side rim');
+        this.right_rim = game.add.sprite(249, 184, 'side rim');
+        game.physics.p2.enable([this.left_rim, this.right_rim], false);
+        this.left_rim.body.setCircle(2.5);
+        this.left_rim.body.static = true;
+        this.left_rim.body.setCollisionGroup(this.collisionGroup);
+        this.left_rim.body.collides([this.collisionGroup]);
+        this.right_rim.body.setCircle(2.5);
+        this.right_rim.body.static = true;
+        this.right_rim.body.setCollisionGroup(this.collisionGroup);
+        this.right_rim.body.collides([this.collisionGroup]);
+        this.createBall();
+        this.cursors = game.input.keyboard.createCursorKeys();
+        game.input.onDown.add(this.click, this);
+        game.input.onUp.add(this.release, this);
+        var instructions = document.createElement("span");
+        document.body.appendChild(instructions);
     };
-    MakePlatformLevel.prototype.setupGroups = function () {
-        this.platforms = game.add.group();
-        this.platforms.enableBody = true;
-        this.risingPlatforms = game.add.group();
-        this.risingPlatforms.enableBody = true;
-        this.fallingPlatforms = game.add.group();
-        this.fallingPlatforms.enableBody = true;
-        this.words = game.add.group();
-        this.words.enableBody = true;
+    BasketScene.prototype.update = function () {
+        if (this.ball && this.ball.body.velocity.y > 0) {
+            this.front_rim = game.add.sprite(148, 182, 'front rim');
+            this.ball.body.collides([this.collisionGroup], this.hitRim, this);
+        }
+        if (this.ball && this.ball.body.velocity.y > 0 && this.ball.body.y > 188 && !this.ball.isBelowHoop) {
+            this.ball.isBelowHoop = true;
+            this.ball.body.collideWorldBounds = false;
+            var rand = Math.floor(Math.random() * 5);
+            if (this.ball.body.x > 151 && this.ball.body.x < 249) {
+                this.current_score += 1;
+                this.current_score_text.text = this.current_score;
+            }
+            else {
+                if (this.current_score > this.high_score) {
+                    this.high_score = this.current_score;
+                }
+                this.current_score = 0;
+                this.current_score_text.text = '';
+                this.current_best_text.text = 'Current Best';
+                this.current_best_score_text.text = this.high_score;
+            }
+        }
+        if (this.ball && this.ball.body.y > 1200) {
+            game.physics.p2.gravity.y = 0;
+            this.ball.kill();
+            this.createBall();
+        }
     };
-    MakePlatformLevel.prototype.setupRestartAndQuitButton = function () {
-        var restart = game.add.button(20, 20, 'restart', function () {
-            var e = new Event('restart_game');
-            document.body.dispatchEvent(e);
-        });
-        restart.anchor.set(0.5);
-        restart.scale.set(0.06);
-        new Phasetips(this.scene.game, {
-            targetObject: restart,
-            context: 'Opnieuw',
-            strokeColor: '#c1e5c1',
-            x: restart.left - 10,
-            y: restart.centerY + 20
-        });
+    BasketScene.prototype.hitRim = function () {
+        this.backboard.play();
+    };
+    BasketScene.prototype.createBall = function () {
+        var xpos;
+        if (this.current_score === 0) {
+            xpos = 200;
+        }
+        else {
+            xpos = 60 + Math.random() * 280;
+        }
+        this.spawn.play();
+        this.ball = game.add.sprite(xpos, 547, 'ball');
+        game.add.tween(this.ball.scale).from({ x: 0.7, y: 0.7 }, 100, Phaser.Easing.Linear.None, true, 0, 0, false);
+        game.physics.p2.enable(this.ball, false);
+        this.ball.body.setCircle(60);
+        this.ball.launched = false;
+        this.ball.isBelowHoop = false;
+    };
+    BasketScene.prototype.click = function (pointer) {
+        var bodies = game.physics.p2.hitTest(pointer.position, [this.ball.body]);
+        if (bodies.length) {
+            this.start_location = [pointer.x, pointer.y];
+            this.isDown = true;
+            this.location_interval = setInterval(function () {
+                this.start_location = [pointer.x, pointer.y];
+            }.bind(this), 200);
+        }
+    };
+    BasketScene.prototype.release = function (pointer) {
+        if (this.isDown) {
+            window.clearInterval(this.location_interval);
+            this.isDown = false;
+            this.end_location = [pointer.x, pointer.y];
+            if (this.end_location[1] < this.start_location[1]) {
+                var slope = [this.end_location[0] - this.start_location[0], this.end_location[1] - this.start_location[1]];
+                var x_traj = -2300 * slope[0] / slope[1];
+                this.launch(x_traj);
+            }
+        }
+    };
+    BasketScene.prototype.launch = function (x_traj) {
+        if (this.ball.launched === false) {
+            this.ball.body.setCircle(36);
+            this.ball.body.setCollisionGroup(this.collisionGroup);
+            this.current_best_text.text = '';
+            this.current_best_score_text.text = '';
+            this.ball.launched = true;
+            game.physics.p2.gravity.y = 3000;
+            game.add.tween(this.ball.scale).to({ x: 0.6, y: 0.6 }, 500, Phaser.Easing.Linear.None, true, 0, 0, false);
+            this.ball.body.velocity.x = x_traj;
+            this.ball.body.velocity.y = -1750;
+            this.ball.body.rotateRight(x_traj / 3);
+            this.whoosh.play();
+        }
+    };
+    BasketScene.prototype.setupRestartAndQuitButton = function () {
         var quit = game.add.button(60, 20, 'quit', function () {
             var e = new Event('quit_game');
             document.body.dispatchEvent(e);
@@ -1535,179 +2177,6 @@ var MakePlatformLevel = (function () {
             y: quit.centerY + 20
         });
     };
-    MakePlatformLevel.prototype.setupGround = function (key) {
-        var ground = this.platforms.create(100, 590, this.scene.createBlock(10, 1600, ''));
-        ground.anchor.set(0.5);
-        ground.body.immovable = true;
-        ground.body.moves = false;
-        var groundCover = game.add.sprite(ground.centerX, ground.centerY - 5, key);
-        groundCover.scale.setTo(2, 0.2);
-        groundCover.anchor.set(0.5);
-    };
-    MakePlatformLevel.prototype.setupLedges = function () {
-        for (var _i = 0, _a = this.positions; _i < _a.length; _i++) {
-            var pos = _a[_i];
-            var island = this.getIsland(pos.key);
-            var ledge = this[String(island.type)].create(pos.x, pos.y, this.scene.createBlock(10, 110, ''));
-            ledge.anchor.set(0.5);
-            ledge.body.immovable = true;
-            ledge.body.moves = false;
-            var cover = game.add.sprite(0, 0, island.name);
-            cover.scale.set(island.scale);
-            cover.anchor.set(0.5);
-            ledge.body.collideWorldBounds = true;
-            ledge.addChild(cover);
-        }
-    };
-    MakePlatformLevel.prototype.setupEnding = function () {
-        var marker = game.add.sprite(0, 0, 'flag');
-        var ending = this.platforms.create(750, 125, this.scene.createBlock(10, 120, ''));
-        ending.anchor.set(0.5);
-        ending.body.immovable = true;
-        ending.body.moves = false;
-        var island = game.add.sprite(ending.centerX, ending.centerY - 10, 'end-platform');
-        island.scale.set(0.3);
-        island.anchor.set(0.5);
-        marker.scale.set(0.08);
-        marker.anchor.set(0.5);
-        marker.alignTo(ending, Phaser.CENTER, 0, 0);
-        this.flag = this.words.create(0, 0, this.scene.createBlock(37, 56, ''));
-        this.flag.anchor.set(0.5);
-        this.flag.alignTo(marker, Phaser.CENTER, -30, -45);
-        this.flag.body.gravity = 0;
-        this.flag.spriteName = 'flag';
-    };
-    MakePlatformLevel.prototype.getIsland = function (name) {
-        return this.islandTypes.find(function (island) {
-            return island.name == name;
-        });
-    };
-    MakePlatformLevel.prototype.setupWords = function () {
-        var random = Math.floor(Math.random() * this.sayings.length);
-        var sentence = this.sayings[random];
-        for (var _i = 0, _a = sentence.spreekwoord.split(" "); _i < _a.length; _i++) {
-            var word = _a[_i];
-            var text = game.add.text(0, 0, word, { font: 'bold 24px Arial', fill: "#ff346d", align: 'center' });
-            var sprite = this.words.create(Math.floor(Math.random() * game.world.width), -400, this.scene.createBlock(50, 20, ''));
-            sprite.addChild(text);
-            sprite.body.gravity.y = 100;
-            sprite.body.bounce.y = 0.5;
-            sprite.body.collideWorldBounds = true;
-            sprite.spriteText = word;
-            sprite.spriteName = 'words';
-        }
-    };
-    MakePlatformLevel.prototype.setupPlayer = function () {
-        this.player = this.scene.add.sprite(this.playerPosition.x, this.playerPosition.y, this.scene.createBlock(20, 20, '#5DBCD2'));
-        this.scene.game.physics.enable(this.player, Phaser.Physics.ARCADE);
-        game.physics.arcade.gravity.y = 250;
-        this.player.body.bounce.y = 0.2;
-        this.player.body.collideWorldBounds = true;
-        this.player.body.setSize(20, 32);
-        this.cursors = game.input.keyboard.createCursorKeys();
-        this.jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        this.parts = this.scene.add.sprite(0, 0, this.scene.createBlock(10, 10, '#ffffff'));
-    };
-    MakePlatformLevel.prototype.setupPlayerControls = function () {
-        this.player.body.velocity.x = 0;
-        if (this.cursors.left.isDown) {
-            this.player.body.velocity.x = -150;
-            if (this.facing != 'left') {
-                this.facing = 'left';
-            }
-        }
-        else if (this.cursors.right.isDown) {
-            this.player.body.velocity.x = 150;
-            if (this.facing != 'right') {
-                this.facing = 'right';
-            }
-        }
-        else {
-            if (this.facing != 'idle') {
-                if (this.facing == 'left') {
-                    this.player.frame = 0;
-                }
-                else {
-                    this.player.frame = 5;
-                }
-                this.facing = 'idle';
-            }
-        }
-        if (this.jumpButton.isDown && (this.player.body.onFloor() || this.player.body.touching.down) && game.time.now > this.jumpTimer) {
-            this.player.body.velocity.y = -250;
-            this.jumpTimer = game.time.now + 750;
-        }
-    };
-    MakePlatformLevel.prototype.risePlatform = function (player, platform) {
-        console.log('rise');
-        platform.body.immovable = false;
-        platform.y -= 1;
-    };
-    MakePlatformLevel.prototype.dropPlatform = function (player, platform) {
-        platform.body.immovable = false;
-        platform.y += 1;
-    };
-    MakePlatformLevel.prototype.setupCollisionAndOverlaps = function () {
-        game.physics.arcade.collide(this.player, this.platforms);
-        game.physics.arcade.collide(this.player, this.risingPlatforms, this.risePlatform);
-        game.physics.arcade.collide(this.player, this.fallingPlatforms, this.dropPlatform);
-        game.physics.arcade.collide(this.words, this.platforms);
-        game.physics.arcade.overlap(this.player, this.words, this.collectWords, undefined, this);
-        game.physics.arcade.overlap(this.player, this.flag, this.reachedEnding, undefined, this);
-    };
-    MakePlatformLevel.prototype.update = function () {
-        this.setupCollisionAndOverlaps();
-        this.parts.alignIn(this.player, Phaser.CENTER, 0, 0);
-        this.setupPlayerControls();
-    };
-    MakePlatformLevel.prototype.collectWords = function (player, word) {
-        if (word.spriteText) {
-            this.collectedWords.push(word.spriteText);
-            word.kill();
-        }
-    };
-    MakePlatformLevel.prototype.reachedEnding = function (player, word) {
-        var _this = this;
-        if (word.spriteName !== null) {
-            var pop = game.add.sprite(game.world.centerX, game.world.centerY, this.scene.createBlock(350, 500, ''));
-            pop.anchor.set(0.5);
-            var para = game.add.sprite(game.world.centerX, game.world.centerY, this.scene.createBlock(300, 600, ''));
-            para.anchor.set(0.5);
-            var paraText = this.scene.createTextBlock('Je hebt nieuwe woorden vrijgespeeld. Deze spelen weer nieuwe spreekwoorden vrij.', 400, 400);
-            paraText.alignIn(para, Phaser.TOP_CENTER, 50, 0);
-            var nextBox = game.add.sprite(game.world.centerX, game.world.centerY, this.scene.createBlock(40, 80, ''));
-            nextBox.anchor.set(0.5);
-            var nextCover = game.add.button(0, 0, 'arrow-button', function () {
-                if (_this.event != false) {
-                    var e = new Event(_this.event);
-                    document.body.dispatchEvent(e);
-                }
-                else {
-                    _this.scene.switchScenes('minigames');
-                }
-            });
-            nextCover.anchor.set(0.5);
-            nextCover.scale.set(0.2);
-            nextCover.alignIn(nextBox, Phaser.CENTER, 0, 0);
-            new Phasetips(this.scene.game, {
-                targetObject: nextCover,
-                context: 'Volgende level',
-                strokeColor: '#c1e5c1',
-                x: nextCover.left - 10,
-                y: nextCover.centerY + 20
-            });
-            nextBox.alignIn(pop, Phaser.BOTTOM_CENTER, 0, 0);
-        }
-    };
-    return MakePlatformLevel;
-}());
-var MoneyBox = (function () {
-    function MoneyBox(posX, posY) {
-        if (posX === void 0) { posX = 10; }
-        if (posY === void 0) { posY = 50; }
-        this.posX = posX;
-        this.posY = posY;
-    }
-    return MoneyBox;
-}());
+    return BasketScene;
+}(Scene));
 //# sourceMappingURL=main.js.map

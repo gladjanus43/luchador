@@ -115,8 +115,6 @@ class MakePlatformLevel{
             x:quit.left - 10,
             y:quit.centerY + 20
         });
-
-
     }
 
     setupGround(key:string)
@@ -332,7 +330,6 @@ class MakePlatformLevel{
             });
 
             nextBox.alignIn(pop,Phaser.BOTTOM_CENTER,0,0);
-
 
         }
     }

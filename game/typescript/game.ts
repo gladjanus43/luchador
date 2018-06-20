@@ -8,13 +8,18 @@ let storeScene:StoreScene;
 let minigames:MiniScene;
 let gameScene:GameScene;
 let mainGame:MainGame;
+let fallingGameScene:FallGame;
+let basketScene:BasketScene;
 
 class MainGame{
 
-    private playerMoney:number = 5000;
+    private playerMoney:number = 15000;
     static ownedMasks:StoreItem[] = [];
     static ownedPowers:StoreItem[] = [];
+    fallingGame : FallGame;
     static sayings:any;
+
+
 
     static character:any = {
       head:{
@@ -40,8 +45,11 @@ class MainGame{
         gameScene = new GameScene();
         platformer = new Platformer();
         minigames = new MiniScene();
+        basketScene = new BasketScene();
+        fallingGameScene = new FallGame();
 
-        game = new Phaser.Game(800, 600, Phaser.AUTO,'',{
+
+        game = new Phaser.Game(800, 600, Phaser.AUTO,'content',{
             preload:this.preload,
             create:this.create,
             update:this.update
@@ -118,6 +126,8 @@ class MainGame{
         game.state.add('storeScene',StoreScene);
         game.state.add('platformer',Platformer);
         game.state.add('minigames',minigames);
+        game.state.add('basketScene',basketScene);
+        game.state.add('fallgame',fallingGameScene);
         game.state.start('homeScene');
     }
 

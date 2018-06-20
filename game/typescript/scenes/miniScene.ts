@@ -34,22 +34,22 @@ class MiniScene extends Scene {
         jumpText.events.onInputUp.add(() => { this.switchScenes('platformer') },this);
 
         // Basketball knop
-        let ballButton = game.add.button(250,150 + jumpButton.height,'basketball',() => { this.switchScenes('') });
+        let ballButton = game.add.button(250,150 + jumpButton.height,'basketball',() => { this.switchScenes('basketScene') });
         ballButton.scale.set(0.2);
         ballButton.anchor.set(0.5);
         let ballText = this.createTextBlock('Basketballen',30, 400);
         ballText.alignTo(ballButton,Phaser.CENTER,-150,-80);
         ballText.inputEnabled = true;
-        ballText.events.onInputUp.add(() => { this.switchScenes('') },this);
+        ballText.events.onInputUp.add(() => { this.switchScenes('basketScene') },this);
 
         // Quiz knop
-        let quizButton = game.add.button(250,150 + jumpButton.height + ballButton.height,'quiz',() => { this.switchScenes('') });
+        let quizButton = game.add.button(250,150 + jumpButton.height + ballButton.height,'quiz',() => { this.switchScenes('fallgame') });
         quizButton.scale.set(0.2);
         quizButton.anchor.set(0.5);
         let quizText = this.createTextBlock('quiz',30, 400);
         quizText.alignTo(quizButton,Phaser.CENTER,-150,-80);
         quizText.inputEnabled = true;
-        quizText.events.onInputUp.add(() => { this.switchScenes('') },this);
+        quizText.events.onInputUp.add(() => { this.switchScenes('fallgame') },this);
 
         this.setUpBackButton();
     }
