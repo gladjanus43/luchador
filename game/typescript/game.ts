@@ -3,15 +3,18 @@ let game:Phaser.Game;
 let homeScene:HomeScene;
 let playScene:PlayScene;
 let settingScene:SettingScene;
+let platformer:Platformer;
 let storeScene:StoreScene;
+let minigames:MiniScene;
 let gameScene:GameScene;
 let mainGame:MainGame;
 
 class MainGame{
 
-    private playerMoney:number = 10000;
+    private playerMoney:number = 5000;
     static ownedMasks:StoreItem[] = [];
     static ownedPowers:StoreItem[] = [];
+    static sayings:any;
 
     static character:any = {
       head:{
@@ -35,12 +38,16 @@ class MainGame{
         settingScene = new SettingScene();
         storeScene = new StoreScene();
         gameScene = new GameScene();
+        platformer = new Platformer();
+        minigames = new MiniScene();
 
         game = new Phaser.Game(800, 600, Phaser.AUTO,'',{
             preload:this.preload,
             create:this.create,
             update:this.update
         });
+
+        this.loadSayings();
     }
 
     public getOwnedMasks()
@@ -76,6 +83,17 @@ class MainGame{
         }
     }
 
+    private loadSayings(){
+        fetch("http://luchador.local/connection.php")
+            .then(res => res.json())
+            .then(res => this.pushSayings(res))
+    }
+
+    private pushSayings(results:any)
+    {
+        MainGame.sayings = results;
+    }
+
     preload()
     {
         game.load.image('speech-bubble',"./img/speech-bubble.png");
@@ -98,8 +116,12 @@ class MainGame{
         game.state.add('playScene',PlayScene);
         game.state.add('settingScene',SettingScene);
         game.state.add('storeScene',StoreScene);
-        game.state.start('playScene');
+        game.state.add('platformer',Platformer);
+        game.state.add('minigames',minigames);
+        game.state.start('homeScene');
     }
+
+
 
     update()
     {

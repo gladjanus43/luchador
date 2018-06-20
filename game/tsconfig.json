@@ -11,8 +11,8 @@
         "watch": true
     },
     "files": [
-        "lib/phaser.d.ts",
-        "lib/pixi.d.ts"
+      "docs/lib/phaser.d.ts",
+      "docs/lib/pixi.d.ts"
     ],
     "include": [
         "typescript/**/*"

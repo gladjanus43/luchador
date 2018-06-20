@@ -14,8 +14,8 @@ class Scene extends Phaser.State{
      */
     protected loadStandardButtons():void
     {
-        this.load.image("start-button","./images/start-button.png");
-        this.load.image("music-button","./images/music-button.png");
+        this.load.image("start-button","./img/start-button.png");
+        this.load.image("music-button","./img/music-button.png");
     }
 
 
@@ -74,6 +74,14 @@ class Scene extends Phaser.State{
         return block;
     }
 
+    public createTextBlock(text:string,height:number,width:number)
+    {
+        let spriteText = game.add.text(0,0,text,{ font: 'bold 24px Arial', fill: "#ff346d", align: 'center',wordWrap: true, wordWrapWidth: width});
+        let sprite = game.add.sprite(0,0,this.createBlock(height,width,''));
+        sprite.addChild(spriteText);
+        return sprite;
+    }
+
     /**
      * Method to create a block on the screen
      * @param {number} height
@@ -81,17 +89,27 @@ class Scene extends Phaser.State{
      * @param {string} color
      * @returns {Phaser.BitmapData}
      */
-    protected createBlock(height:number, width:number, color:string)
+    public createBlock(height:number, width:number, color:string)
     {
         let bitmap = this.game.add.bitmapData(width,height);
 
         bitmap.ctx.beginPath();
         bitmap.ctx.rect(0,0,width,height);
-        bitmap.ctx.fillStyle = color;
-        bitmap.ctx.fill();
+
+
+        if(color !== ""){
+            // console.log("test");
+            bitmap.ctx.fillStyle = color;
+            bitmap.ctx.fill();
+        }else{
+            bitmap.fill(0,0,0,0);
+
+        }
 
         return bitmap;
     }
+
+
 
     protected loadBackgroundMusic()
     {
@@ -111,7 +129,7 @@ class Scene extends Phaser.State{
      * Method to switch scenes
      * @param {string} sceneName
      */
-    protected switchScenes(sceneName:string):void
+    public switchScenes(sceneName:string):void
     {
         this.game.state.start(sceneName,true,false);
     }

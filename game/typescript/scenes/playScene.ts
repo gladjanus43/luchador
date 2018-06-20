@@ -5,6 +5,7 @@ class PlayScene extends Scene {
     foodBoxItems: Phaser.Sprite[] = [];
     maskBoxItems: any[] = [];
     powerBoxItems: any[] = [];
+    colorBoxItems: any[] = [];
     character: MakeCharacter;
     allBoxesAndContent: any[] = [];
     colors: object = {
@@ -171,17 +172,21 @@ class PlayScene extends Scene {
         this.load.image('fire-power-up', "./img/fire-power-up.png");
         this.load.image('money-power-up', "./img/money-power-up.png");
 
+        this.load.image('background',"./img/background.jpg");
         this.loadBackgroundMusic();
     }
 
     create() {
+        let background = this.add.image(this.game.world.centerX,this.game.world.centerY,'background');
+
+        background.anchor.set(0.5);
+        background.scale.set(1.3);
         // let music = game.add.audio('background-music');
         // // music.volume += 1;
         // music.loop = true;
         // music.play();
 
 
-        console.log(MainGame.character);
 
         this.character = new MakeCharacter('sad');
         this.character.changeMaskColor(MainGame.character.head.color);
@@ -192,12 +197,12 @@ class PlayScene extends Scene {
 
         this.character.setupCharacterColorPicker((sprite: Sprite | Button) => this.colorPicker(sprite));
 
-        setTimeout(() => {
-            let bubble = new SpeechBubble(this.character.getCharacterHead(), 0.1, Phaser.RIGHT_CENTER);
-            bubble.addTextToBubble("Ik heb honger!", "22px");
-        }, 1000);
+        // setTimeout(() => {
+        //     let bubble = new SpeechBubble(this.character.getCharacterHead(), 0.1, Phaser.RIGHT_CENTER);
+        //     bubble.addTextToBubble("Ik heb honger!", "22px");
+        // }, 1000);
 
-        let charachterOptionBox = game.add.sprite(game.world.centerX - 350, game.world.centerY, this.createBlock(300, 70, "red"));
+        let charachterOptionBox = game.add.sprite(game.world.centerX - 350, game.world.centerY, this.createBlock(300, 70, ""));
         charachterOptionBox.anchor.setTo(0.5, 0.5);
 
         let foodOption = game.add.button(charachterOptionBox.centerX, charachterOptionBox.centerY - 120, 'food-button', () => {
@@ -206,11 +211,28 @@ class PlayScene extends Scene {
         foodOption.anchor.setTo(0.5, 0.5);
         foodOption.scale.setTo(0.02, 0.02);
 
+        new Phasetips(this.game,{
+            targetObject: foodOption,
+            context: 'Eten',
+            strokeColor: 0xff0000,
+            x:foodOption.left - 10,
+            y:foodOption.centerY + 20
+        });
+
         let maskOption = game.add.button(charachterOptionBox.centerX, charachterOptionBox.centerY, 'mask-button', () => {
             this.toggleBox(this.maskBoxItems);
         });
         maskOption.anchor.setTo(0.5, 0.5);
         maskOption.scale.setTo(0.02, 0.02);
+
+        new Phasetips(this.game,{
+            targetObject: maskOption,
+            context: 'Maskers',
+            strokeColor: 0xff0000,
+            x:maskOption.left - 10,
+            y:maskOption.centerY + 20
+        });
+
 
         let powerUpOption = game.add.button(charachterOptionBox.centerX, charachterOptionBox.centerY + 120, 'power-up-button', () => {
             this.toggleBox(this.powerBoxItems);
@@ -218,8 +240,16 @@ class PlayScene extends Scene {
         powerUpOption.anchor.setTo(0.5, 0.5);
         powerUpOption.scale.setTo(0.02, 0.02);
 
+        new Phasetips(this.game,{
+            targetObject: powerUpOption,
+            context: 'Krachten',
+            strokeColor: 0xff0000,
+            x:powerUpOption.left - 10,
+            y:powerUpOption.centerY + 20
+        });
 
-        let gameOptionBox = game.add.sprite(game.world.centerX + 350, game.world.centerY - 200, this.createBlock(150, 70, "red"));
+
+        let gameOptionBox = game.add.sprite(game.world.centerX + 350, game.world.centerY - 200, this.createBlock(150, 70, ""));
         gameOptionBox.anchor.setTo(0.5, 0.5);
 
         let storeOption = game.add.button(gameOptionBox.centerX, gameOptionBox.centerY - 40, 'store-button', () => {
@@ -228,11 +258,27 @@ class PlayScene extends Scene {
         storeOption.anchor.setTo(0.5, 0.5);
         storeOption.scale.setTo(0.020, 0.020);
 
+        new Phasetips(this.game,{
+            targetObject: storeOption,
+            context: 'Winkel',
+            strokeColor: 0xff0000,
+            x:storeOption.left - 10,
+            y:storeOption.centerY + 20
+        });
+
         let gameOption = game.add.button(gameOptionBox.centerX, gameOptionBox.centerY + 40, 'game-button', () => {
-            this.switchScenes('homeScene');
+            this.switchScenes('minigames');
         });
         gameOption.anchor.setTo(0.5, 0.5);
         gameOption.scale.setTo(0.035, 0.035);
+
+        new Phasetips(this.game,{
+            targetObject: gameOption,
+            context: 'Spelletjes',
+            strokeColor: 0xff0000,
+            x:gameOption.left - 15,
+            y:gameOption.centerY + 20
+        });
 
         this.setUpFoodBoxAndItems(this.character.getMouthSprite());
         this.setupMaskBoxAndItems();
@@ -245,7 +291,7 @@ class PlayScene extends Scene {
 
     private colorPicker(item: Sprite | Button) {
 
-        let colorBox = game.add.sprite(game.world.centerX , game.world.centerY + 270 , this.createBlock(80, 400, "red"));
+        let colorBox = game.add.sprite(game.world.centerX , game.world.centerY + 270 , this.createBlock(80, 400, ""));
         colorBox.anchor.set(0.5);
         // colorBox.visible = false;
 
@@ -272,14 +318,20 @@ class PlayScene extends Scene {
                 this.character.matchCorrectColorChange(key, this.colors[color]);
             });
 
+            if (!this.checkifArrayContainsItem(colorBlock, this.colorBoxItems)) {
+                this.maskBoxItems.push(colorBlock);
+                i++;
+            }
             start++;
             i++;
         }
+
+        this.allBoxesAndContent = this.checkforUniqueValues(this.allBoxesAndContent.concat(this.colorBoxItems));
     }
 
 
     private setUpFoodBoxAndItems(head: Phaser.Sprite) {
-        let foodBox = game.add.sprite(game.world.centerX, game.world.centerY - 250, this.createBlock(80, 400, "red"));
+        let foodBox = game.add.sprite(game.world.centerX, game.world.centerY - 250, this.createBlock(80, 400, ""));
         foodBox.anchor.setTo(0.5, 0.5);
         foodBox.visible = false;
         let pizza = this.createBoxItem('pizza-item', 0.05, -150, foodBox, head, "consumeFood");
@@ -294,35 +346,42 @@ class PlayScene extends Scene {
 
 
     setupMaskBoxAndItems() {
-        let maskBox = game.add.sprite(game.world.centerX, game.world.centerY - 250, this.createBlock(80, 400, "red"));
+        let maskBox = game.add.sprite(game.world.centerX, game.world.centerY - 250, this.createBlock(80, 400, ""));
         maskBox.anchor.setTo(0.5, 0.5);
         maskBox.visible = false;
         let items = mainGame.getOwnedMasks();
 
         let i = 0;
 
-        for (let item of items) {
+        if(items.length){
+            maskBox.removeChildren();
+            for (let item of items) {
 
-            let sprite = game.add.sprite((maskBox.x - 160) + (i * 90), maskBox.y, item.getButtonObject().key);
-            sprite.scale.set(0.035);
-            sprite.anchor.set(0.5);
-            sprite.visible = false;
-            sprite.inputEnabled = true;
-            sprite.input.enableDrag(true);
+                let sprite = game.add.sprite((maskBox.x - 160) + (i * 90), maskBox.y, item.getButtonObject().key);
+                sprite.scale.set(0.035);
+                sprite.anchor.set(0.5);
+                sprite.visible = false;
+                sprite.inputEnabled = true;
+                sprite.input.enableDrag(true);
 
-            this.addActionOnCollision(sprite, this.character.getCharacterHead(), () => {
-                let points = sprite.input.dragStartPoint;
-                this.character.changeMaskDecoration(String(sprite.key));
-                sprite.x = points.x;
-                sprite.y = points.y;
-            });
+                this.addActionOnCollision(sprite, this.character.getCharacterHead(), () => {
+                    let points = sprite.input.dragStartPoint;
+                    this.character.changeMaskDecoration(String(sprite.key));
+                    sprite.x = points.x;
+                    sprite.y = points.y;
+                });
 
-            if (!this.checkifArrayContainsItem(sprite, this.maskBoxItems)) {
-                this.maskBoxItems.push(sprite);
-                i++;
+                if (!this.checkifArrayContainsItem(sprite, this.maskBoxItems)) {
+                    this.maskBoxItems.push(sprite);
+                    i++;
+                }
+
             }
-
+        }else{
+            let textBlock = this.createTextBlock('NOG GEEN MASKERS',80,400);
+            maskBox.addChild(textBlock);
         }
+
 
         if (!this.checkifArrayContainsItem(maskBox, this.maskBoxItems)) {
             this.maskBoxItems.push(maskBox);
@@ -344,22 +403,29 @@ class PlayScene extends Scene {
     }
 
     setupPowerBoxAndItems() {
-        let powerBox = game.add.sprite(game.world.centerX, game.world.centerY - 250, this.createBlock(80, 400, "red"));
+        let powerBox = game.add.sprite(game.world.centerX, game.world.centerY - 250, this.createBlock(80, 400, ""));
         powerBox.anchor.set(0.5);
         powerBox.visible = false;
         let items = mainGame.getOwnedPowers();
 
         let i = 0;
 
-        for (let item of items) {
-            let sprite = this.createBoxItem(String(item.getButtonObject().key), 0.030, -160 + (i * 90), powerBox, this.character.getCharacterHead(), () => {
-                console.log("Works");
-            });
-            if (!this.checkifArrayContainsItem(sprite, this.powerBoxItems)) {
-                this.powerBoxItems.push(sprite);
-                i++;
+        if(items.length){
+            powerBox.removeChildren();
+            for (let item of items) {
+                let sprite = this.createBoxItem(String(item.getButtonObject().key), 0.030, -160 + (i * 90), powerBox, this.character.getCharacterHead(), () => {
+                    console.log("Works");
+                });
+                if (!this.checkifArrayContainsItem(sprite, this.powerBoxItems)) {
+                    this.powerBoxItems.push(sprite);
+                    i++;
+                }
             }
+        }else{
+            let textBlock = this.createTextBlock('NOG GEEN POWERS',80,400);
+            powerBox.addChild(textBlock);
         }
+
 
         if (!this.checkifArrayContainsItem(powerBox, this.powerBoxItems)) {
             this.powerBoxItems.push(powerBox);
@@ -378,7 +444,6 @@ class PlayScene extends Scene {
 
 
     toggleBox(items: Phaser.Sprite[]) {
-        console.log(items);
         let check = items[0].visible;
         for (let target of this.allBoxesAndContent) {
             target.visible = false;
@@ -407,7 +472,6 @@ class PlayScene extends Scene {
 
     faceChanges(character: MakeCharacter) {
         window.addEventListener('imfull', () => {
-            character.changeMaskColor("#ff0000");
             character.changeMouthEmotion('smile');
             character.changeSingleEye('left', 'smile');
             character.changeSingleEye('right', 'smile');

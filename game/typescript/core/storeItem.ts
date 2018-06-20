@@ -31,9 +31,10 @@ class StoreItem {
         this.textArray.push(bottomText);
     }
 
-    setUpItemActionOnClick(callback:any)
+    setUpItemActionOnClick(callback:any,callback_two:any,sprite:Sprite)
     {
-        this.storeItem.events.onInputUp.add(() => this.buyItem(callback));
+        sprite.visible = false;
+        this.storeItem.events.onInputUp.add(() => this.buyItem(callback,callback_two));
     }
 
     scaleStoreItem(scale:number)
@@ -41,22 +42,23 @@ class StoreItem {
         this.storeItem.scale.set(scale);
     }
 
-    buyItem(callback:any)
+    buyItem(callback:any,callback_two:any)
     {
         let spendMoney = new Event('money_change');
-        if(mainGame.getPlayerMoney() > this.price){
-            this.storeItem.inputEnabled = false;
+        if(mainGame.getPlayerMoney() >= this.price){
+            this.disableItem();
             mainGame.setPlayerMoney(mainGame.getPlayerMoney() - this.price);
-            this.storeItem.tint = 0x1BC500;
             window.dispatchEvent(spendMoney);
 
             callback();
         }else{
-            /*
-            TODO add no funds reaction
-             */
-            console.log("No funds");
+            callback_two();
         }
+    }
+
+    public disableItem() {
+        this.storeItem.inputEnabled = false;
+        this.storeItem.tint = 0x1BC500;
     }
 
     getButtonObject()

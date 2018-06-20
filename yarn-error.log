@@ -1,0 +1,36 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\adriaan\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add phasetips
+
+PATH: 
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Git\cmd;C:\HashiCorp\Vagrant\bin;C:\ProgramData\ComposerSetup\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\LLVM\bin;C:\Users\adriaan\AppData\Local\Programs\Python\Python36\Scripts\;C:\Users\adriaan\AppData\Local\Programs\Python\Python36\;C:\Ruby24-x64\bin;C:\wamp64\bin\php\php7.0.10;C:\Users\adriaan\AppData\Roaming\Composer\vendor\bin;C:\Users\adriaan\AppData\Roaming\npm;C:\Users\adriaan\AppData\Roaming\Composer\vendor\bin;C:\Users\adriaan\AppData\Local\Yarn\bin;C:\adb;C:\Android;C:\Program Files\Novell\iPrint;C:\Program Files\nodejs\;C:\Program Files (x86)\Yarn\bin\;C:\Users\adriaan\AppData\Local\Programs\Python\Python36\Scripts\;C:\Users\adriaan\AppData\Local\Programs\Python\Python36\;C:\Ruby24-x64\bin;C:\wamp64\bin\php\php7.0.10;C:\Users\adriaan\AppData\Roaming\Composer\vendor\bin;C:\Users\adriaan\AppData\Roaming\Composer\vendor\bin;C:\Users\adriaan\AppData\Roaming\npm;C:\Users\adriaan\AppData\Local\Yarn\bin
+
+Yarn version: 
+  1.5.1
+
+Node version: 
+  8.10.0
+
+Platform: 
+  win32 x64
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: https://registry.yarnpkg.com/phasetips: Not found
+      at Request.params.callback [as _callback] (C:\Users\adriaan\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:65019:18)
+      at Request.self.callback (C:\Users\adriaan\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:132430:22)
+      at emitTwo (events.js:126:13)
+      at Request.emit (events.js:214:7)
+      at Request.<anonymous> (C:\Users\adriaan\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:133413:10)
+      at emitOne (events.js:116:13)
+      at Request.emit (events.js:211:7)
+      at IncomingMessage.<anonymous> (C:\Users\adriaan\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:133333:12)
+      at Object.onceWrapper (events.js:313:30)
+      at emitNone (events.js:111:20)
