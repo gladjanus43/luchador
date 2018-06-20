@@ -11,6 +11,7 @@ let mainGame:MainGame;
 let fallingGameScene:FallGame;
 let basketScene:BasketScene;
 
+//nmsdhaufiuasn
 class MainGame{
 
     private playerMoney:number = 15000;
