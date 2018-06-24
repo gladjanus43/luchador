@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <title>Contact</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Questions or remarks? Leave them behind and we'll try to answer them as soon as possible!</h2>
+    </div>
+    <div class="row"></div>
+    <div class="column">
+        <form name="myForm" action="" onsubmit="return validateForm()" method="post">
+            First name: <input type="text" name="fname" required> 
+            Last name: <input type="text" name="lname" required> 
+            E-mail: <input type="text" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required> Subject:
+            <textarea id="subject" name="subject" placeholder="Write something.." style="height:170px" required></textarea>
+            <button name="submit" type="submit" value="fav_HTML">Submit</button>
+        </form>
+    </div>
+<!--    Event listener wordt toegevoegd op de submit knop-->
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', onSubmit);
+
+        function onSubmit(event) {
+            event.preventDefault();
+            myFunction();
+            form.reset();
+        }
+//Alert box voor pop up in de browser
+
+        function myFunction() {
+            alert("De reactie is verzonden!"); 
+        }
+    </script>
+</body>
+<script type="text/javascript" src="js/main.js"></script>
+</html>
